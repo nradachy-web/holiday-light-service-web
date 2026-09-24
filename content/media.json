@@ -1,0 +1,948 @@
+[
+  {
+    "name": "residential-birch-wraps",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/residential-birch-wraps-160.webp",
+      "webp": {
+        "480": "/assets/images/residential-birch-wraps-480.webp",
+        "720": "/assets/images/residential-birch-wraps-720.webp"
+      },
+      "avif": {
+        "720": "/assets/images/residential-birch-wraps-720.avif"
+      }
+    },
+    "widths": [
+      480,
+      720
+    ],
+    "width": 720,
+    "height": 960,
+    "orientation": "portrait",
+    "caption": "Birch trunks wrapped limb by limb in cool white and red.",
+    "alt": "A clump of birch trees at night with trunks and limbs wrapped in cool white and red mini lights, beside a landscaped bed of boulders.",
+    "subject": "Tree wraps (residential)",
+    "tone": "night",
+    "focal": "50% 45%",
+    "uses": [
+      "services-residential",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "residential-multicolor-canopy",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/residential-multicolor-canopy-160.webp",
+      "webp": {
+        "480": "/assets/images/residential-multicolor-canopy-480.webp",
+        "720": "/assets/images/residential-multicolor-canopy-720.webp"
+      },
+      "avif": {
+        "720": "/assets/images/residential-multicolor-canopy-720.avif"
+      }
+    },
+    "widths": [
+      480,
+      720
+    ],
+    "width": 720,
+    "height": 960,
+    "orientation": "portrait",
+    "caption": "A mature front yard tree wrapped from trunk to branch tips in multicolor.",
+    "alt": "A large bare tree in a front yard at night wrapped from the trunk to the branch tips in multicolor lights, with lit homes behind it.",
+    "subject": "Tree and canopy lighting (residential)",
+    "tone": "night",
+    "focal": "50% 40%",
+    "uses": [
+      "services-residential",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "residential-red-green-trees",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/residential-red-green-trees-160.webp",
+      "webp": {
+        "480": "/assets/images/residential-red-green-trees-480.webp",
+        "900": "/assets/images/residential-red-green-trees-900.webp"
+      },
+      "avif": {
+        "900": "/assets/images/residential-red-green-trees-900.avif"
+      }
+    },
+    "widths": [
+      480,
+      900
+    ],
+    "width": 900,
+    "height": 675,
+    "orientation": "landscape",
+    "caption": "Red and green canopy wraps framing a brick home.",
+    "alt": "A brick two story home at night with a large tree wrapped in red lights on the left, a tree wrapped in green on the right, and smaller lit trees by the entry.",
+    "subject": "Tree and canopy lighting (residential)",
+    "tone": "night",
+    "focal": "50% 50%",
+    "uses": [
+      "services-residential",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "evergreens-green-lights",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/evergreens-green-lights-160.webp",
+      "webp": {
+        "480": "/assets/images/evergreens-green-lights-480.webp",
+        "720": "/assets/images/evergreens-green-lights-720.webp"
+      },
+      "avif": {
+        "720": "/assets/images/evergreens-green-lights-720.avif"
+      }
+    },
+    "widths": [
+      480,
+      720
+    ],
+    "width": 720,
+    "height": 960,
+    "orientation": "portrait",
+    "caption": "Spruce trees filled with green light along a lawn edge.",
+    "alt": "Two spruce trees covered in green lights on a lawn at night, with a birch trunk in front of the left tree.",
+    "subject": "Trees and shrubs",
+    "tone": "night",
+    "focal": "50% 45%",
+    "uses": [
+      "services-residential",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "downtown-street-blue-hour",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/downtown-street-blue-hour-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-street-blue-hour-480.webp",
+        "720": "/assets/images/downtown-street-blue-hour-720.webp"
+      },
+      "avif": {
+        "720": "/assets/images/downtown-street-blue-hour-720.avif"
+      }
+    },
+    "widths": [
+      480,
+      720
+    ],
+    "width": 720,
+    "height": 780,
+    "orientation": "portrait",
+    "caption": "Downtown street trees wrapped in warm white at blue hour.",
+    "alt": "A downtown street at dusk lined with trees wrapped in warm white lights, with traffic signals, a crosswalk and historic brick buildings.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "50% 60%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "commercial-building-lit-trees",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/commercial-building-lit-trees-160.webp",
+      "webp": {
+        "480": "/assets/images/commercial-building-lit-trees-480.webp",
+        "900": "/assets/images/commercial-building-lit-trees-900.webp",
+        "1500": "/assets/images/commercial-building-lit-trees-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/commercial-building-lit-trees-900.avif",
+        "1500": "/assets/images/commercial-building-lit-trees-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 938,
+    "orientation": "landscape",
+    "caption": "Warm white canopy lighting on the trees in front of an office building.",
+    "alt": "A two story brick office building at night with three trees in front fully wrapped in warm white lights.",
+    "subject": "Commercial properties",
+    "tone": "night",
+    "focal": "55% 50%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "subdivision-entrance-green-trees",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/subdivision-entrance-green-trees-160.webp",
+      "webp": {
+        "480": "/assets/images/subdivision-entrance-green-trees-480.webp",
+        "900": "/assets/images/subdivision-entrance-green-trees-900.webp"
+      },
+      "avif": {
+        "900": "/assets/images/subdivision-entrance-green-trees-900.avif"
+      }
+    },
+    "widths": [
+      480,
+      900
+    ],
+    "width": 900,
+    "height": 675,
+    "orientation": "landscape",
+    "caption": "A subdivision entrance with canopy trees wrapped in green and a lit stone sign.",
+    "alt": "A neighborhood entrance at night with a row of trees wrapped in green lights, white wrapped trunks, a stone entry sign trimmed in warm white and white lights along a fence.",
+    "subject": "HOA and subdivision entrances",
+    "tone": "night",
+    "focal": "45% 50%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "evergreens-warm-white",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/evergreens-warm-white-160.webp",
+      "webp": {
+        "480": "/assets/images/evergreens-warm-white-480.webp",
+        "720": "/assets/images/evergreens-warm-white-720.webp"
+      },
+      "avif": {
+        "720": "/assets/images/evergreens-warm-white-720.avif"
+      }
+    },
+    "widths": [
+      480,
+      720
+    ],
+    "width": 720,
+    "height": 960,
+    "orientation": "portrait",
+    "caption": "A stand of evergreens filled with warm white light.",
+    "alt": "Five tall evergreen trees wrapped in warm white lights at night beside a walkway, with a river rock bed in the foreground.",
+    "subject": "Trees and shrubs",
+    "tone": "night",
+    "focal": "50% 40%",
+    "uses": [
+      "services-residential",
+      "services-commercial",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "roofline-large-home",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/roofline-large-home-160.webp",
+      "webp": {
+        "480": "/assets/images/roofline-large-home-480.webp",
+        "900": "/assets/images/roofline-large-home-900.webp"
+      },
+      "avif": {
+        "900": "/assets/images/roofline-large-home-900.avif"
+      }
+    },
+    "widths": [
+      480,
+      900
+    ],
+    "width": 900,
+    "height": 418,
+    "orientation": "landscape",
+    "caption": "Warm white bulbs tracing every gable, dormer and eave.",
+    "alt": "A large two story home at dusk with warm white bulbs outlining the rooflines, gables and dormers.",
+    "subject": "Roofline lighting",
+    "tone": "dusk",
+    "focal": "50% 50%",
+    "uses": [
+      "services-residential",
+      "landing-residential",
+      "our-work"
+    ]
+  },
+  {
+    "name": "bucket-truck-roofline-install",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/bucket-truck-roofline-install-160.webp",
+      "webp": {
+        "480": "/assets/images/bucket-truck-roofline-install-480.webp",
+        "900": "/assets/images/bucket-truck-roofline-install-900.webp"
+      },
+      "avif": {
+        "900": "/assets/images/bucket-truck-roofline-install-900.avif"
+      }
+    },
+    "widths": [
+      480,
+      900
+    ],
+    "width": 900,
+    "height": 675,
+    "orientation": "landscape",
+    "caption": "A bucket truck crew working a steep gable in daylight.",
+    "alt": "A crew member in a bucket lift at the peak of a brick and sided home, with a white utility truck in the driveway.",
+    "subject": "Installation crew",
+    "tone": "day",
+    "focal": "40% 45%",
+    "uses": [
+      "about",
+      "services-residential",
+      "landing-residential"
+    ]
+  },
+  {
+    "name": "downtown-streetscape-daytime",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/downtown-streetscape-daytime-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-streetscape-daytime-480.webp",
+        "900": "/assets/images/downtown-streetscape-daytime-900.webp",
+        "1500": "/assets/images/downtown-streetscape-daytime-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/downtown-streetscape-daytime-900.avif",
+        "1500": "/assets/images/downtown-streetscape-daytime-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 2000,
+    "orientation": "portrait",
+    "caption": "A downtown streetscape seen from above in daylight.",
+    "alt": "An elevated daytime view of a downtown street with pedestrian crossing signs, a planted median, street trees and a brick building at the end of the block.",
+    "subject": "Downtown streetscape (daytime)",
+    "tone": "day",
+    "focal": "50% 60%",
+    "uses": [
+      "about"
+    ]
+  },
+  {
+    "name": "downtown-wrapped-trees-night",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/downtown-wrapped-trees-night-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-wrapped-trees-night-480.webp",
+        "900": "/assets/images/downtown-wrapped-trees-night-900.webp",
+        "1500": "/assets/images/downtown-wrapped-trees-night-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/downtown-wrapped-trees-night-900.avif",
+        "1500": "/assets/images/downtown-wrapped-trees-night-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 1125,
+    "orientation": "landscape",
+    "caption": "Street trees wrapped in warm white along both sides of a downtown block.",
+    "alt": "An empty downtown main street at night with trees on both sides wrapped in warm white lights above storefronts and sidewalks.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "night",
+    "focal": "50% 45%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "crew-bistro-install",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/crew-bistro-install-160.webp",
+      "webp": {
+        "480": "/assets/images/crew-bistro-install-480.webp",
+        "900": "/assets/images/crew-bistro-install-900.webp",
+        "1500": "/assets/images/crew-bistro-install-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/crew-bistro-install-900.avif",
+        "1500": "/assets/images/crew-bistro-install-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 1125,
+    "orientation": "landscape",
+    "caption": "Hanging bistro lights from the bucket.",
+    "alt": "A crew member in a bucket lift attaching a strand of red and clear bistro bulbs to an overhead cable above a road crosswalk.",
+    "subject": "Installation crew",
+    "tone": "day",
+    "focal": "35% 45%",
+    "uses": [
+      "about",
+      "services-commercial",
+      "landing-commercial"
+    ]
+  },
+  {
+    "name": "downtown-sidewalk-wraps",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/downtown-sidewalk-wraps-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-sidewalk-wraps-480.webp",
+        "900": "/assets/images/downtown-sidewalk-wraps-900.webp",
+        "1500": "/assets/images/downtown-sidewalk-wraps-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/downtown-sidewalk-wraps-900.avif",
+        "1500": "/assets/images/downtown-sidewalk-wraps-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 2000,
+    "orientation": "portrait",
+    "caption": "Warm white wraps running the length of a downtown sidewalk.",
+    "alt": "A downtown sidewalk at night with a street tree wrapped in warm white lights in the foreground and more lit trees down the block.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "night",
+    "focal": "30% 40%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "pavilion-roofline-lights",
+    "kind": "photo",
+    "source": "company-photo",
+    "files": {
+      "thumb": "/assets/images/pavilion-roofline-lights-160.webp",
+      "webp": {
+        "480": "/assets/images/pavilion-roofline-lights-480.webp",
+        "900": "/assets/images/pavilion-roofline-lights-900.webp",
+        "1500": "/assets/images/pavilion-roofline-lights-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/pavilion-roofline-lights-900.avif",
+        "1500": "/assets/images/pavilion-roofline-lights-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 454,
+    "orientation": "landscape",
+    "caption": "Warm white bulbs outlining a covered pavilion roofline.",
+    "alt": "A covered pavilion at night with warm white bulbs outlining the roofline and a stone center gable holding a lit wreath.",
+    "subject": "Building outlines (commercial)",
+    "tone": "night",
+    "focal": "47% 55%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "waterfront-tree-night",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/waterfront-tree-night-160.webp",
+      "webp": {
+        "480": "/assets/images/waterfront-tree-night-480.webp",
+        "900": "/assets/images/waterfront-tree-night-900.webp",
+        "1500": "/assets/images/waterfront-tree-night-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/waterfront-tree-night-900.avif",
+        "1500": "/assets/images/waterfront-tree-night-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "A giant multicolor tree on the waterfront at night, Northern Michigan.",
+    "alt": "A tall evergreen covered in multicolor lights standing on a lakeshore at night, with dark water, a far shoreline and a cloudy sky behind.",
+    "subject": "Municipal tree lighting",
+    "tone": "night",
+    "focal": "51% 55%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work",
+      "closing"
+    ]
+  },
+  {
+    "name": "tree-lights-closeup",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/tree-lights-closeup-160.webp",
+      "webp": {
+        "480": "/assets/images/tree-lights-closeup-480.webp",
+        "900": "/assets/images/tree-lights-closeup-900.webp",
+        "1500": "/assets/images/tree-lights-closeup-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/tree-lights-closeup-900.avif",
+        "1500": "/assets/images/tree-lights-closeup-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "Dense multicolor lighting on a giant evergreen, seen up close.",
+    "alt": "A close view of a large evergreen densely wrapped in red, green, blue and white lights against a dark evening sky and water.",
+    "subject": "Municipal tree lighting",
+    "tone": "night",
+    "focal": "55% 50%",
+    "uses": [
+      "services-commercial",
+      "our-work",
+      "about"
+    ]
+  },
+  {
+    "name": "waterfront-tree-dusk",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/waterfront-tree-dusk-160.webp",
+      "webp": {
+        "480": "/assets/images/waterfront-tree-dusk-480.webp",
+        "900": "/assets/images/waterfront-tree-dusk-900.webp",
+        "1500": "/assets/images/waterfront-tree-dusk-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/waterfront-tree-dusk-900.avif",
+        "1500": "/assets/images/waterfront-tree-dusk-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "A lit waterfront tree at dusk, Northern Michigan.",
+    "alt": "An aerial view at dusk of a tall evergreen covered in multicolor lights beside a lakeshore path, with a pier and calm water reflecting the clouds.",
+    "subject": "Municipal tree lighting",
+    "tone": "dusk",
+    "focal": "60% 45%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "park-tree-and-wraps",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/park-tree-and-wraps-160.webp",
+      "webp": {
+        "480": "/assets/images/park-tree-and-wraps-480.webp",
+        "900": "/assets/images/park-tree-and-wraps-900.webp",
+        "1500": "/assets/images/park-tree-and-wraps-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/park-tree-and-wraps-900.avif",
+        "1500": "/assets/images/park-tree-and-wraps-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "A community tree surrounded by warm white canopy wraps, Northern Michigan.",
+    "alt": "A tall evergreen in multicolor lights in a town park at blue hour, with deciduous trees wrapped in warm white lights behind it.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "65% 50%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "downtown-storefront-wraps",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/downtown-storefront-wraps-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-storefront-wraps-480.webp",
+        "900": "/assets/images/downtown-storefront-wraps-900.webp",
+        "1500": "/assets/images/downtown-storefront-wraps-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/downtown-storefront-wraps-900.avif",
+        "1500": "/assets/images/downtown-storefront-wraps-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "Canopy trees wrapped in warm white along a downtown block, Northern Michigan.",
+    "alt": "A row of lit storefronts at night behind large street trees wrapped in warm white lights, with cars parked along the curb.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "night",
+    "focal": "55% 45%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "downtown-sidewalk-night",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/downtown-sidewalk-night-160.webp",
+      "webp": {
+        "480": "/assets/images/downtown-sidewalk-night-480.webp",
+        "900": "/assets/images/downtown-sidewalk-night-900.webp",
+        "1500": "/assets/images/downtown-sidewalk-night-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/downtown-sidewalk-night-900.avif",
+        "1500": "/assets/images/downtown-sidewalk-night-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "A downtown sidewalk under warm white canopy lighting, Northern Michigan.",
+    "alt": "A wide downtown sidewalk at night beneath street trees wrapped in warm white lights, with storefronts glowing across the street.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "night",
+    "focal": "45% 45%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "town-blue-hour-aerial",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/town-blue-hour-aerial-160.webp",
+      "webp": {
+        "480": "/assets/images/town-blue-hour-aerial-480.webp",
+        "900": "/assets/images/town-blue-hour-aerial-900.webp",
+        "1500": "/assets/images/town-blue-hour-aerial-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/town-blue-hour-aerial-900.avif",
+        "1500": "/assets/images/town-blue-hour-aerial-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "A lit downtown at blue hour, Northern Michigan.",
+    "alt": "An aerial view of a small downtown at blue hour, with warm white wrapped trees along the main street under a deep blue sky.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "50% 70%",
+    "uses": [
+      "closing",
+      "services-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "town-harbor-aerial",
+    "kind": "photo",
+    "source": "footage-still",
+    "files": {
+      "thumb": "/assets/images/town-harbor-aerial-160.webp",
+      "webp": {
+        "480": "/assets/images/town-harbor-aerial-480.webp",
+        "900": "/assets/images/town-harbor-aerial-900.webp",
+        "1500": "/assets/images/town-harbor-aerial-1500.webp"
+      },
+      "avif": {
+        "900": "/assets/images/town-harbor-aerial-900.avif",
+        "1500": "/assets/images/town-harbor-aerial-1500.avif"
+      }
+    },
+    "widths": [
+      480,
+      900,
+      1500
+    ],
+    "width": 1500,
+    "height": 844,
+    "orientation": "landscape",
+    "caption": "Wrapped street trees leading to the harbor at blue hour, Northern Michigan.",
+    "alt": "An aerial view at blue hour of a main street lined with trees wrapped in warm white lights, leading past rooftops to a harbor and a lake.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "55% 55%",
+    "uses": [
+      "closing",
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  },
+  {
+    "name": "hero-tree",
+    "kind": "video",
+    "source": "drone-footage",
+    "files": {
+      "mp4": {
+        "720": "/assets/media/hero-tree-720.mp4",
+        "1080": "/assets/media/hero-tree-1080.mp4"
+      },
+      "poster": {
+        "webp": {
+          "960": "/assets/media/hero-tree-poster-960.webp",
+          "1920": "/assets/media/hero-tree-poster-1920.webp"
+        },
+        "avif": {
+          "960": "/assets/media/hero-tree-poster-960.avif",
+          "1920": "/assets/media/hero-tree-poster-1920.avif"
+        }
+      },
+      "portrait": {
+        "mp4": "/assets/media/hero-tree-portrait-720.mp4",
+        "poster": {
+          "webp": {
+            "720": "/assets/media/hero-tree-portrait-poster-720.webp"
+          },
+          "avif": {
+            "720": "/assets/media/hero-tree-portrait-poster-720.avif"
+          }
+        },
+        "width": 720,
+        "height": 1280,
+        "focal": "50% 50%"
+      }
+    },
+    "width": 1920,
+    "height": 1080,
+    "duration": 10.01,
+    "loop": "eased forward and back sweep",
+    "bytes": {
+      "720": 1721617,
+      "1080": 3946914,
+      "portrait": 1784635
+    },
+    "caption": "A giant multicolor tree on the waterfront at night, Northern Michigan.",
+    "alt": "A slow aerial drift in front of a tall evergreen covered in multicolor lights on a lakeshore at night.",
+    "subject": "Municipal tree lighting",
+    "tone": "night",
+    "focal": "62% 50%",
+    "uses": [
+      "hero"
+    ]
+  },
+  {
+    "name": "downtown-wraps",
+    "kind": "video",
+    "source": "drone-footage",
+    "files": {
+      "mp4": {
+        "720": "/assets/media/downtown-wraps-720.mp4",
+        "1080": "/assets/media/downtown-wraps-1080.mp4"
+      },
+      "poster": {
+        "webp": {
+          "960": "/assets/media/downtown-wraps-poster-960.webp",
+          "1920": "/assets/media/downtown-wraps-poster-1920.webp"
+        },
+        "avif": {
+          "960": "/assets/media/downtown-wraps-poster-960.avif",
+          "1920": "/assets/media/downtown-wraps-poster-1920.avif"
+        }
+      }
+    },
+    "width": 1920,
+    "height": 1080,
+    "duration": 8.51,
+    "loop": "crossfade tail into head",
+    "bytes": {
+      "720": 1498972,
+      "1080": 3768401
+    },
+    "caption": "Canopy trees wrapped in warm white along a downtown block, Northern Michigan.",
+    "alt": "A slow sideways pass along lit storefronts beneath street trees wrapped in warm white lights at night.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "night",
+    "focal": "50% 45%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial"
+    ]
+  },
+  {
+    "name": "town-aerial",
+    "kind": "video",
+    "source": "drone-footage",
+    "files": {
+      "mp4": {
+        "720": "/assets/media/town-aerial-720.mp4",
+        "1080": "/assets/media/town-aerial-1080.mp4"
+      },
+      "poster": {
+        "webp": {
+          "960": "/assets/media/town-aerial-poster-960.webp",
+          "1920": "/assets/media/town-aerial-poster-1920.webp"
+        },
+        "avif": {
+          "960": "/assets/media/town-aerial-poster-960.avif",
+          "1920": "/assets/media/town-aerial-poster-1920.avif"
+        }
+      }
+    },
+    "width": 1920,
+    "height": 1080,
+    "duration": 8.51,
+    "loop": "crossfade tail into head",
+    "bytes": {
+      "720": 1342140,
+      "1080": 3077000
+    },
+    "caption": "A lit downtown at blue hour, Northern Michigan.",
+    "alt": "A slow aerial pan across a small downtown at blue hour, with warm white wrapped trees glowing under a deep blue sky.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "50% 65%",
+    "uses": [
+      "closing",
+      "service-area"
+    ]
+  },
+  {
+    "name": "park-tree-wraps",
+    "kind": "video",
+    "source": "drone-footage",
+    "files": {
+      "mp4": {
+        "720": "/assets/media/park-tree-wraps-720.mp4",
+        "1080": "/assets/media/park-tree-wraps-1080.mp4"
+      },
+      "poster": {
+        "webp": {
+          "960": "/assets/media/park-tree-wraps-poster-960.webp",
+          "1920": "/assets/media/park-tree-wraps-poster-1920.webp"
+        },
+        "avif": {
+          "960": "/assets/media/park-tree-wraps-poster-960.avif",
+          "1920": "/assets/media/park-tree-wraps-poster-1920.avif"
+        }
+      }
+    },
+    "width": 1920,
+    "height": 1080,
+    "duration": 10.01,
+    "loop": "eased forward and back sweep",
+    "bytes": {
+      "720": 1535409,
+      "1080": 3943968
+    },
+    "caption": "A community tree and warm white canopy wraps in a town park, Northern Michigan.",
+    "alt": "A slow aerial orbit around a tall multicolor tree in a park at blue hour, with warm white wrapped trees behind it.",
+    "subject": "Downtown and municipal lighting",
+    "tone": "dusk",
+    "focal": "55% 50%",
+    "uses": [
+      "services-commercial",
+      "landing-commercial",
+      "our-work"
+    ]
+  }
+]

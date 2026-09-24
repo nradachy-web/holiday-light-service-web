@@ -1,0 +1,179 @@
+{
+  "slug": "brighton-mi",
+  "name": "Brighton",
+  "display": "Brighton, MI",
+  "county": "Livingston County",
+  "facts": [
+    {
+      "text": "Brighton is a city in Livingston County, incorporated as a city in 1928, on land that was once part of Brighton, Green Oak and Genoa townships.",
+      "source": "https://en.wikipedia.org/wiki/Brighton,_Michigan",
+      "verified": true
+    },
+    {
+      "text": "Interstate 96, US 23 and Grand River Avenue are the city's major thoroughfares.",
+      "source": "https://en.wikipedia.org/wiki/Brighton,_Michigan",
+      "verified": true
+    },
+    {
+      "text": "Downtown Brighton is a walkable, traditional downtown with a mix of independently owned shops, restaurants, and personal care and service businesses.",
+      "source": "https://www.brightoncitymi.gov/business___community/downtown_brighton/index.php",
+      "verified": true
+    },
+    {
+      "text": "The Mill Pond is the focal point of the Brighton community, a water feature surrounded by a landscaped park with a paved promenade and outdoor seating.",
+      "source": "https://www.michigan.org/property/brighton-mill-pond",
+      "verified": true
+    },
+    {
+      "text": "The Tridge and a half mile nature boardwalk run along downtown Brighton's Mill Pond.",
+      "source": "https://explorebrightonhowellarea.com/communities/brighton/",
+      "verified": true
+    },
+    {
+      "text": "The Imagination Station, a 10,000 square foot wooden playscape, sits in Brighton's Principal Shopping District.",
+      "source": "https://explorebrightonhowellarea.com/communities/brighton/",
+      "verified": true
+    },
+    {
+      "text": "The Brighton Downtown Development Authority's free Live at Millpond Park summer concerts are held Thursday nights at The AMP and Saturday nights near the downtown fire pit.",
+      "source": "https://www.brightoncitymi.gov/business___community/downtown_brighton/live_at_millpond_park.php",
+      "verified": true
+    },
+    {
+      "text": "Brighton Mall, on the north side of town off I-96 Exit 145, is a former enclosed mall that was rebuilt in 1996 as a power center.",
+      "source": "https://en.wikipedia.org/wiki/Brighton,_Michigan",
+      "verified": true
+    },
+    {
+      "text": "Downtown Brighton's annual Holiday Glow and Christmas Market, held on a Saturday in November, welcomes Santa ahead of the lighting of downtown Brighton in the early evening.",
+      "source": "https://www.whmi.com/news/article/brightons-annual-holiday-glow-and-christmas-market-saturday",
+      "verified": true
+    }
+  ],
+  "neighbors": [
+    "hartland-mi",
+    "howell-mi",
+    "milford-mi",
+    "commerce-township-mi",
+    "novi-mi"
+  ],
+  "hub": {
+    "title": "Holiday Lighting in Brighton, MI | Holiday Light Service",
+    "meta_description": "Brighton, MI homes, downtown shops and retail centers lit for the holidays, from classic Christmas lights to permanent roofline lighting. Free estimates.",
+    "h1": "Holiday Lighting in Brighton, MI",
+    "intro": "For Brighton homes and businesses, Holiday Light Service plans the display, installs it, services it through the season and takes it down after the holidays. Our company was founded in 2003, and Brighton is part of our Livingston County service area. Get a free estimate online or call (248) 756-8915.",
+    "local_context": "Brighton's holiday season starts early. On a Saturday in November, the Holiday Glow and Christmas Market welcomes Santa, and downtown Brighton lights up in the early evening. The Mill Pond is the focal point of the community, surrounded by a landscaped park and a paved promenade, with the Tridge and a half mile boardwalk along the water. Independent shops, restaurants and service businesses fill a walkable, traditional downtown, while the Brighton Mall power center anchors the north side off I-96. A strolling downtown, highway retail and the neighborhoods in between each call for a different kind of lighting plan.",
+    "highlights": [
+      "Home displays planned early for a town that lights its downtown in November",
+      "Storefront, window and patio lighting for Brighton's walkable downtown",
+      "Permanent roofline lighting you can switch from warm white to team colors by phone"
+    ]
+  },
+  "pages": {
+    "christmas-light-installation": {
+      "title": "Christmas Lights in Brighton, MI | Holiday Light Service",
+      "meta_description": "Brighton, MI Christmas light installation: rooflines, trees and shrubs designed, installed, serviced and removed after the holidays. Free estimates.",
+      "h1": "Christmas Light Installation in Brighton, MI",
+      "hero_sub": "Your house lit in clean, even lines without a weekend on the ladder. Design, installation, in-season service and takedown, all from one company.",
+      "local_paragraph": "Downtown Brighton switches on its holiday lights at the Holiday Glow and Christmas Market, held on a Saturday in November. If you want your own roofline glowing by then, plan ahead. We begin with a walk around the house: the roofline and its peaks, the trees worth wrapping, the shrubs along the foundation, the porch and where power is available. From there we design a display that suits the home and the way you want it to look. Our crews hang it in clean, even lines, look after it through the season and clear it all away after the holidays. You get the finished look and keep your weekends.",
+      "considerations": [
+        [
+          "Peaks and second stories",
+          "Tall peaks and second story rooflines are where do-it-yourself lighting gets risky and uneven. Our crews use bucket trucks for elevated work wherever the property allows access, which keeps the high runs straight and puts nobody on a leaning ladder against your gutters."
+        ],
+        [
+          "Trees and landscaping",
+          "A wrapped tree in the front yard or lit evergreens along the drive can carry as much of the display as the roofline. We look at trunk size, branch spread and spacing during the estimate and plan the wrap so the tree glows evenly instead of in patches."
+        ],
+        [
+          "Outlets and cord runs",
+          "Exterior outlets decide a lot. We check where power is available and how cords will reach the far corners of the yard, then plan the runs so nothing is strung across the front walk and the display comes on together at dusk."
+        ]
+      ],
+      "faq": [
+        [
+          "Is Brighton in your Christmas light service area?",
+          "Yes. Brighton sits in our Livingston County service area, along with Howell and Hartland. Fill out the form on this page or phone (248) 756-8915, and we will find a time to walk the property and hear what you have in mind for the season."
+        ],
+        [
+          "How early should I book in Brighton?",
+          "As early as you can. Install dates generally fall between October and early December, and requests that arrive in early fall have the widest choice. That matters most if you want your house lit around the time downtown lights up for the Holiday Glow in November."
+        ],
+        [
+          "What is included in the free estimate?",
+          "A look at the house, a conversation about the style you want and a written estimate built around your home. It lays out exactly what is included, from the design and the install to in-season service and the takedown, so nothing about the job is left vague."
+        ]
+      ]
+    },
+    "commercial-holiday-lighting": {
+      "title": "Brighton Commercial Holiday Lighting | Holiday Light Service",
+      "meta_description": "Commercial holiday lighting in Brighton, MI for downtown storefronts, restaurants, retail centers and offices. Planned, installed and removed for you.",
+      "h1": "Commercial Holiday Lighting in Brighton, MI",
+      "hero_sub": "Storefronts, restaurants, retail centers and offices lit for the season, with bucket-truck crews for the high work and one plan from design to takedown.",
+      "local_paragraph": "Downtown Brighton is a walkable, traditional downtown full of independently owned shops, restaurants and service businesses, and it is made for strolling. The Mill Pond promenade, the Tridge and the half mile boardwalk run right along downtown, and the Holiday Glow in November brings people out to watch it light up. A storefront outlined in light, a wrapped tree by the door or bistro strands along the facade all help a business stand out on those evenings. Out by I-96, the Brighton Mall power center and other retail and office properties call for a different approach, with longer facades, bigger parking fields and landscaping seen from a moving car.",
+      "considerations": [
+        [
+          "Storefronts seen up close",
+          "Downtown shoppers see your building from a few feet away, so details count. We outline windows, doors and rooflines in straight, even runs, keep cords tidy at eye level and can add wrapped trees near the entrance to draw people in from the sidewalk."
+        ],
+        [
+          "Bistro lighting",
+          "Bistro string lighting adds warmth to a restaurant front, a courtyard or a gathering spot along the facade. We hang it from the bucket truck with consistent drape and spacing, and plan each run so it suits the space and stays well above the heads of passing guests."
+        ],
+        [
+          "Larger retail properties",
+          "Power centers and plazas have long facades and wide parking fields. We plan the display in sections, focus light on entrances and tenant fronts, and use the bucket truck for high parapets and tall lot trees so the property reads as one coordinated scene."
+        ]
+      ],
+      "faq": [
+        [
+          "Do you light storefronts in downtown Brighton?",
+          "Yes. Downtown storefronts are a natural fit for our commercial work, and Brighton is squarely in our service area. A single storefront, a restaurant or a row of neighboring businesses that want a matching look can all be planned together. Send a request through the form or call (248) 756-8915 to get started."
+        ],
+        [
+          "When should Brighton shops get on the schedule?",
+          "Downtown lights up at the Holiday Glow on a Saturday in November, so a business that wants to be lit for it should reach out in early fall. Commercial work fills the weeks from October into early December, and a September request leaves the most room to schedule around your hours."
+        ],
+        [
+          "Do you work with shopping centers and property managers?",
+          "Yes. Shopping centers, office properties and multi-tenant buildings are among the commercial properties we light. We walk the site with the manager, plan the display around access and power, and send a written estimate, with everything included listed plainly, for owner review."
+        ]
+      ]
+    },
+    "permanent-lighting": {
+      "title": "Permanent Lighting in Brighton, MI | Holiday Light Service",
+      "meta_description": "Permanent lighting for Brighton, MI homes: an app-controlled roofline for Christmas, Halloween, the Fourth, game days and quiet nights. Free estimates.",
+      "h1": "Permanent Lighting in Brighton, MI",
+      "hero_sub": "A roofline lit on your schedule, all year. Set colors and scenes from your phone for December, game days, birthdays or a warm glow on a regular night.",
+      "local_paragraph": "Downtown Brighton gathers outdoors more than once a year, from free summer concerts at Millpond Park to the Holiday Glow in November. Permanent lighting gives your house the same range. Installed once along the roofline, the lights stay put while an app on your phone decides what they do: warm white for Christmas, team colors on a game day, a patriotic palette for the Fourth, soft accent light on a weeknight. There is no fall install to schedule and no January takedown. Our part is the layout, the power plan, the installation and an app walkthrough, so the house is ready for any occasion with a tap.",
+      "considerations": [
+        [
+          "Using it beyond December",
+          "Permanent lighting pays off when you use it often. Look at the occasions on your calendar beyond Christmas: Halloween, the Fourth of July, game days, a family party, or simply a warm outline that welcomes you home on a winter evening."
+        ],
+        [
+          "Rooflines with many corners",
+          "Houses with several peaks, dormers or an angled garage take more planning than a simple straight roofline. We map each run and corner during the estimate, so the lights read as one continuous outline at night instead of a series of disconnected pieces."
+        ],
+        [
+          "Lighting for gatherings",
+          "Permanent lighting is not only for holidays. A soft outline makes a summer evening on the deck or a birthday in the yard feel finished, and a schedule can have the house lit before guests pull into the driveway, with no one reaching for a switch."
+        ]
+      ],
+      "faq": [
+        [
+          "Do you install permanent lighting in Brighton?",
+          "Yes. Brighton homes are within our service area for permanent roofline lighting. We start with a free estimate. We study the roofline, find where power is available, ask how you picture using the lights and put everything included in writing."
+        ],
+        [
+          "What does it look like during the day?",
+          "It is designed to sit discreetly along the roofline, so the house looks like itself in daylight. During the estimate we talk through placement against your trim and gutters, so you know what to expect before anything is installed on the house."
+        ],
+        [
+          "Can I use it for more than Christmas?",
+          "That is the main reason to choose it. Set warm white for the holidays, orange for Halloween, red, white and blue for the Fourth, school colors for a graduation party or a subtle everyday accent. Schedules turn the lights on and off without you opening the app."
+        ]
+      ]
+    }
+  }
+}

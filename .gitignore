@@ -1,0 +1,7 @@
+node_modules/
+dist/
+reports/
+research/raw/
+.DS_Store
+*.log
+research/

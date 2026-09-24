@@ -251,13 +251,14 @@
     "alt": "Five tall evergreen trees wrapped in warm white lights at night beside a walkway, with a river rock bed in the foreground.",
     "subject": "Trees and shrubs",
     "tone": "night",
-    "focal": "50% 40%",
+    "focal": "50% 26%",
     "uses": [
       "services-residential",
       "services-commercial",
       "landing-residential",
       "our-work"
-    ]
+    ],
+    "frame": "1/1"
   },
   {
     "name": "roofline-large-home",
@@ -556,7 +557,7 @@
     "width": 1500,
     "height": 844,
     "orientation": "landscape",
-    "caption": "Dense multicolor lighting on a giant evergreen, seen up close.",
+    "caption": "Dense multicolor lighting on a giant evergreen, seen up close, Northern Michigan.",
     "alt": "A close view of a large evergreen densely wrapped in red, green, blue and white lights against a dark evening sky and water.",
     "subject": "Municipal tree lighting",
     "tone": "night",

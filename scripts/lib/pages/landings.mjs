@@ -6,66 +6,124 @@ import { esc } from '../html.mjs';
 import { icon } from '../icons.mjs';
 import { STRINGS } from '../roofline.mjs';
 import { splitHero, heroFrame, cityEyebrow } from '../heroes.mjs';
-import { considerationCards, processRow, faqList, faqSchema, ticks, sceneSwitcher, SPELLS, SPELLS_PERMANENT } from '../blocks.mjs';
+import { considerationCards, processRow, faqList, faqSchema, ticks, sceneSwitcher, planRow, SPELLS, SPELLS_PERMANENT } from '../blocks.mjs';
 import { quoteForm } from '../form.mjs';
 import { closing, composition } from '../sections.mjs';
 import { LOCAL_SERVICES, BUSINESS } from '../config.mjs';
 import { estimateLink, phoneLink } from '../layout.mjs';
+import { processSteps, audienceFor, relatedGuide } from '../pagekit.mjs';
 
-// Per service: presets, the hero string shape, and photo variants [hero, composition].
+// Per service: presets, the hero string shape, the hero media variants and the photos for the
+// local section. Hero slots carry warm white (or neutral daylight) work only; each colored photo
+// in the local section is paired with a warm one (design-decisions.md, DESIGN.md photo rules).
 export const LANDING_SETUP = {
   'christmas-light-installation': {
-    highlight: 0,
-    topic: 'Christmas lights',
+    topic: 'Christmas light installation',
+    anchor: 'Christmas lights',
     lights: ['Roofline'],
     property: 'Home',
     deco: 'eave',
+    og: 'home',
     nav: '/christmas-light-installation/',
     variants: [
-      [['roofline-large-home'], ['evergreens-warm-white', 'residential-multicolor-canopy']],
-      [['evergreens-warm-white', 'residential-multicolor-canopy'], ['roofline-large-home', 'bucket-truck-roofline-install']],
-      [['roofline-large-home'], ['residential-birch-wraps', 'evergreens-warm-white']],
-      [['residential-multicolor-canopy', 'evergreens-warm-white'], ['roofline-large-home', 'residential-red-green-trees']],
+      { hero: ['roofline-large-home', 'evergreens-warm-white'], local: ['bucket-truck-roofline-install', 'residential-multicolor-canopy'] },
+      { hero: ['bucket-truck-roofline-install', 'evergreens-warm-white'], local: ['roofline-large-home', 'residential-birch-wraps'] },
+      { hero: ['roofline-large-home', 'bucket-truck-roofline-install'], local: ['evergreens-warm-white', 'residential-red-green-trees'] },
+      { hero: ['evergreens-warm-white', 'roofline-large-home'], local: ['bucket-truck-roofline-install', 'residential-red-green-trees'] },
     ],
   },
   'commercial-holiday-lighting': {
-    highlight: 1,
-    topic: 'commercial holiday lighting',
+    topic: 'commercial Christmas lights and holiday lighting',
+    anchor: 'Commercial lighting',
     lights: [],
     property: 'Business',
     deco: 'outline',
-    video: 'downtown-wraps',
-    og: 'commercial',
+    og: 'building',
+    plan: true,
     nav: '/commercial-holiday-lighting/',
+    // Footage on some pages, our own stills (captions without place names) on the rest.
     variants: [
-      [null, ['downtown-wrapped-trees-night', 'downtown-sidewalk-wraps']],
-      [null, ['commercial-building-lit-trees', 'crew-bistro-install']],
-      [null, ['downtown-sidewalk-night', 'pavilion-roofline-lights']],
-      [null, ['subdivision-entrance-green-trees', 'downtown-street-blue-hour']],
+      { bleed: { name: 'downtown-wraps' }, local: ['downtown-wrapped-trees-night', 'downtown-sidewalk-wraps'] },
+      { bleed: { photo: 'commercial-building-lit-trees', focal: '50% 40%' }, local: ['crew-bistro-install', 'downtown-sidewalk-wraps'] },
+      { bleed: { photo: 'downtown-wrapped-trees-night', focal: '50% 45%' }, local: ['commercial-building-lit-trees', 'crew-bistro-install'] },
+      { bleed: { photo: 'downtown-sidewalk-wraps', focal: '50% 42%' }, local: ['pavilion-roofline-lights', 'commercial-building-lit-trees'] },
     ],
   },
   'permanent-lighting': {
-    highlight: 2,
-    topic: 'permanent lighting',
+    topic: 'permanent Christmas lights',
+    anchor: 'Permanent lights',
     lights: ['Permanent lighting'],
     property: 'Home',
     deco: 'track',
+    og: 'home',
     scene: true,
     nav: '/permanent-lighting/',
-    variants: [[null, []]],
+    // No photos of permanent installs exist yet, so the local section shows our seasonal roofline
+    // work, labeled as seasonal, beside the estimate checklist.
+    variants: [{ local: ['roofline-large-home'] }, { local: ['bucket-truck-roofline-install'] }],
   },
 };
+
+// Generic FAQs are added after the three city FAQs only when they cover a topic the city FAQs do not.
+const TOPICS = [
+  ['booking', /\bbook(?:ing|ed)?\b|\bhow (?:early|far ahead)\b|\bwhen should\b/i],
+  ['included', /\binclud/i],
+  ['home', /\bbe home\b/i],
+  ['damage', /\bdamage\b/i],
+  ['outage', /\bgo(?:es)? out\b|\bgoes dark\b|\bstop working\b/i],
+  ['walkthrough', /\bwalkthrough\b/i],
+  ['hours', /\bhours\b/i],
+  ['hoa', /\bHOA\b|\bassociation\b|\bmunicipal\b/i],
+  ['track', /\btrack\b/i],
+  ['control', /\bcontrol\b|\bapp\b/i],
+  ['occasions', /\bonly for christmas\b|\bother holidays\b|\ball year\b/i],
+  ['price', /\bpric/i],
+  ['choose', /\bpermanent or seasonal\b|\bseasonal or permanent\b/i],
+];
+const topicOf = (q) => (TOPICS.find(([, re]) => re.test(q)) || [q.toLowerCase()])[0];
+// Backfill from the general FAQ when the service FAQs are all covered by the city's questions.
+const BACKFILL = {
+  'christmas-light-installation': [/^Do I need extra outlets/, /^What happens if the weather/, /^How should I prepare/],
+  'commercial-holiday-lighting': [/^Do commercial projects/, /^What happens if the weather/, /^Do I need HOA approval/],
+  'permanent-lighting': [/^What is the difference between permanent/, /^Do I need extra outlets/],
+};
+
+function pickFaqs(ctx, slug, cityFaqs, serviceFaqs, k) {
+  const used = new Set(cityFaqs.map(([q]) => topicOf(q)));
+  const n = serviceFaqs.length;
+  const a = k % n;
+  // Rotation keeps neighboring pages from showing the same pair: a, a+2, a+4, a+1, a+3.
+  const order = [0, 2, 4, 1, 3].map((d) => serviceFaqs[(a + d) % n]).filter(Boolean);
+  const general = (BACKFILL[slug] || []).map((re) => ctx.content.copy.faq.items.find(([q]) => re.test(q))).filter(Boolean);
+  const picked = [];
+  for (const item of [...order, ...general]) {
+    if (picked.length === 2) break;
+    const t = topicOf(item[0]);
+    if (used.has(t)) continue;
+    used.add(t);
+    picked.push(item);
+  }
+  return [...cityFaqs, ...picked];
+}
+
+// Neighbor links in both directions: every community a page lists, plus every community that lists it.
+function nearbyMap(cities) {
+  const back = new Map(cities.map((c) => [c.slug, []]));
+  for (const c of cities) for (const n of c.neighbors || []) back.get(n)?.push(c.slug);
+  return new Map(cities.map((c) => [c.slug, [...new Set([...(c.neighbors || []), ...back.get(c.slug).sort()])]]));
+}
 
 export default function landingPages(ctx) {
   const pages = [];
   const { cities, service, colorOf } = ctx.content;
+  const nearby = nearbyMap(cities);
   LOCAL_SERVICES.forEach((slug, si) => {
     const s = service(slug);
     const setup = LANDING_SETUP[slug];
     for (const city of cities) {
       const P = city.pages[slug];
       const v = colorOf(city.slug, setup.variants.length, si);
-      const faqs = [...P.faq, ...pickServiceFaqs(s.faqs, colorOf(city.slug, 5, si + 3))];
+      const faqs = pickFaqs(ctx, slug, P.faq, s.faqs, colorOf(city.slug, 5, si + 3));
       pages.push({
         path: `/${slug}/${city.slug}/`,
         type: 'landing',
@@ -75,7 +133,8 @@ export default function landingPages(ctx) {
         title: P.title,
         description: P.meta_description,
         estimateHref: '#estimate',
-        ogImage: setup.og === 'commercial' ? ctx.og.commercial : undefined,
+        // Share card: our own photo whose caption names no place (never the Northern Michigan footage).
+        ...ctx.og.card(setup.og, { seasonal: !!setup.scene }),
         crumbs: [
           { name: s.name, href: `/${slug}/` },
           { name: city.display, href: `/${slug}/${city.slug}/` },
@@ -92,23 +151,15 @@ export default function landingPages(ctx) {
           },
           faqSchema(faqs),
         ],
-        body: (ctx, page) => landingBody(ctx, page, { s, setup, city, P, variant: setup.variants[v], faqs }),
+        body: (ctx, page) => landingBody(ctx, page, { s, setup, city, P, variant: setup.variants[v], faqs, nearby: nearby.get(city.slug) }),
       });
     }
   });
   return pages;
 }
 
-// Two service FAQs per page, rotated so neighboring pages do not repeat the same pair.
-function pickServiceFaqs(list, k) {
-  const a = k % list.length;
-  const b = (a + 2) % list.length;
-  return [list[a], list[b]];
-}
-
-function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
-  const { copy, city: cityOf } = ctx.content;
-  const [heroPhotos, compPhotos] = variant;
+function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
+  const { city: cityOf, service } = ctx.content;
   const presets = { city: city.slug, lights: setup.lights, property: setup.property };
   const form = quoteForm(ctx, page, { placement: 'hero', anchor: 'estimate', heading: 'Get my free estimate', ...presets });
   let media = '';
@@ -116,7 +167,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
   if (setup.scene) {
     media = sceneSwitcher(ctx, { cls: 'scene-hero', preset: false });
     mediaCls = 'sh-media-scene';
-  } else if (heroPhotos) media = heroFrame(ctx, heroPhotos);
+  } else if (variant.hero) media = heroFrame(ctx, variant.hero);
 
   const hero = splitHero(ctx, page, {
     crumbItems: [{ name: s.name, href: `/${s.slug}/` }, { name: city.display }],
@@ -124,28 +175,39 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
     h1: P.h1,
     sub: P.hero_sub,
     deco: STRINGS[setup.deco](),
-    variant: setup.video ? 'bleed' : 'frame',
-    bleed: setup.video ? { name: setup.video } : null,
+    variant: variant.bleed ? 'bleed' : 'frame',
+    bleed: variant.bleed || null,
     media,
     mediaCls,
     form,
+    plan: setup.plan ? planRow(ctx, { current: setup.property }) : '',
     spells: setup.scene ? SPELLS_PERMANENT : SPELLS,
   });
 
-  const highlight = city.hub.highlights[setup.highlight] || s.summary;
-  const local = compPhotos.length
-    ? `<div class="local-comp">${composition(ctx, compPhotos, { cls: 'comp-local' })}</div>`
-    : `<div class="local-aside" data-reveal>${spellsCard(ctx, s)}</div>`;
+  const highlight = city.hub.highlights[LOCAL_SERVICES.indexOf(s.slug)] || s.summary;
+  let local;
+  if (setup.scene) {
+    const name = variant.local[0];
+    local = `<div class="local-aside local-aside-fig" data-reveal>
+      <figure class="comp-fig local-fig">${ctx.media.photo(name, { sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption><span class="cap-tag">Seasonal work</span> ${esc(ctx.media.caption(name))}</figcaption></figure>
+      ${spellsCard(ctx, s)}
+    </div>`;
+  } else local = `<div class="local-comp">${composition(ctx, variant.local, { cls: 'comp-local' })}</div>`;
 
-  const neighbors = (city.neighbors || []).map((n) => cityOf(n));
-  const nearby = neighbors
-    .map((n) => `<li><a class="city-pill" href="${ctx.url(`/${s.slug}/${n.slug}/`)}">${esc(n.display)}</a></li>`)
+  const nearbyPills = nearby
+    .map((slug) => cityOf(slug))
+    .map((n) => `<li><a class="city-pill" href="${ctx.url(`/${s.slug}/${n.slug}/`)}">${esc(setup.anchor)} in ${esc(n.display)}</a></li>`)
     .join('');
+  const others = ['christmas-light-installation', 'commercial-holiday-lighting', 'permanent-lighting']
+    .filter((x) => x !== s.slug)
+    .map((x) => `<a class="tlink tlink-sm" href="${ctx.url(`/${x}/${city.slug}/`)}">${esc(LANDING_SETUP[x].anchor)} in ${esc(city.name)}${icon('arrow')}</a>`)
+    .join('');
+  const audience = audienceFor(s.slug);
 
   return `${hero}
 
 <section class="sec sec-local" id="local" aria-labelledby="local-title">
-  <div class="wrap local${compPhotos.length ? '' : ' local-solo'}">
+  <div class="wrap local">
     <div class="local-copy" data-reveal>
       <p class="place-tag">${icon('pin')}<span>${esc(city.display)}</span><span class="place-county">${esc(city.county)}</span></p>
       <h2 id="local-title">${esc(highlight)}</h2>
@@ -172,7 +234,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
     </div>
     <div class="included-steps" data-reveal>
       <p class="scope-h">How it works</p>
-      ${processRow(copy.process.steps.slice(0, 4), { cls: 'process-compact' })}
+      ${processRow(processSteps(ctx, audience).slice(0, 4), { cls: 'process-compact' })}
     </div>
   </div>
 </section>
@@ -182,6 +244,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
     <div class="faq-side" data-reveal>
       <h2 id="faq-title">Before you book</h2>
       <p class="lead-s">Common questions about ${esc(setup.topic)} in ${esc(city.name)}.</p>
+      ${relatedGuide(ctx, s.slug)}
     </div>
     <div data-reveal>${faqList(faqs)}</div>
   </div>
@@ -190,12 +253,24 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs }) {
 <section class="sec sec-nearby" aria-labelledby="nearby-title">
   <div class="wrap nearby">
     <h2 id="nearby-title" class="h-quiet">Nearby communities</h2>
-    <ul class="city-pills">${nearby}</ul>
-    <p class="nearby-links"><a class="tlink" href="${ctx.url(`/service-area/${city.slug}/`)}">Holiday lighting in ${esc(city.display)}${icon('arrow')}</a><a class="tlink" href="${ctx.url(`/${s.slug}/`)}">${esc(s.name)}${icon('arrow')}</a></p>
+    <ul class="city-pills">${nearbyPills}</ul>
+    <p class="nearby-also"><span class="nearby-also-k">Also in ${esc(city.name)}</span>${others}<a class="tlink tlink-sm" href="${ctx.url(`/service-area/${city.slug}/`)}">All holiday lighting in ${esc(city.display)}${icon('arrow')}</a></p>
+    <p class="nearby-links"><a class="tlink" href="${ctx.url(`/${s.slug}/`)}">${esc(service(s.slug).name)} across Southeast Michigan${icon('arrow')}</a></p>
   </div>
 </section>
 
-${closing(ctx, page, { heading: s.cta_line, text: '', eyebrow: `Free estimate in ${city.display}`, photoName: s.slug === 'commercial-holiday-lighting' ? 'town-harbor-aerial' : 'town-blue-hour-aerial', anchor: 'estimate-close', formOpts: { ...presets } })}`;
+${closing(ctx, page, { heading: s.cta_line, text: '', eyebrow: `Free estimate in ${city.display}`, photoName: closingPhoto(s.slug, [...(variant.hero || []), variant.bleed?.photo, ...(variant.local || [])]), anchor: 'estimate-close', label: setup.scene ? 'Seasonal work' : '', formOpts: { ...presets } })}`;
+}
+
+// The closing background on local pages: our own warm white work whose caption names no place (a
+// "Northern Michigan" caption under a local H1 undercuts the local promise), never a photo already on the page.
+const CLOSING = {
+  'commercial-holiday-lighting': ['downtown-wrapped-trees-night', 'commercial-building-lit-trees', 'downtown-sidewalk-wraps'],
+  default: ['commercial-building-lit-trees', 'downtown-wrapped-trees-night', 'downtown-sidewalk-wraps'],
+};
+export function closingPhoto(slug, used = []) {
+  const list = CLOSING[slug] || CLOSING.default;
+  return list.find((n) => !used.includes(n)) || list[0];
 }
 
 function spellsCard(ctx, s) {

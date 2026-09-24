@@ -111,6 +111,21 @@ for (const c of cities) {
 for (const v of verticals) planned.add(`/commercial/${v.slug}/`);
 for (const g of guides) planned.add(`/guides/${g.slug}/`);
 
+// hub.highlights[i] is the H2 of the local section on the i-th service's landing page and the card line
+// on the hub, so each slot must describe its service: 0 residential, 1 commercial, 2 permanent.
+{
+  const NOT_RES = /\b(?:storefronts?|business(?:es)?|commercial|offices?|retail|shopping|dealerships?|hotels?|facades?|HOA entrances?|subdivision entrances?|entrance displays?)\b/i;
+  const COMMERCIAL = /\b(?:storefronts?|business(?:es)?|commercial|offices?|retail|shopping|HOAs?|associations?|entrances?|facades?|dealerships?|hotels?|properties|downtown|Main Street)\b/i;
+  const PERMANENT = /\b(?:permanent|year-round|year-long|all year|app|app-controlled|app-run)\b/i;
+  for (const c of cities) {
+    const h = c.hub?.highlights || [];
+    if (h.length < 3) { fail('content: hub.highlights needs three lines (residential, commercial, permanent)', c.slug); continue; }
+    if (NOT_RES.test(h[0])) fail('content: hub.highlights[0] must be the residential line', `${c.slug}: "${h[0]}"`);
+    if (!COMMERCIAL.test(h[1])) fail('content: hub.highlights[1] must be the commercial line', `${c.slug}: "${h[1]}"`);
+    if (!PERMANENT.test(h[2])) fail('content: hub.highlights[2] must be the permanent lighting line', `${c.slug}: "${h[2]}"`);
+  }
+}
+
 // Every file path media.json knows about, with the pixel width its name promises.
 const mediaFiles = new Map();
 for (const entry of media) {
@@ -561,7 +576,10 @@ for (const { file, route } of pages) {
       if (!textOf(doc, hp[0]).includes('756-8915')) fail('header: phone link must contain the visible number text for desktop', route);
     }
     const he = N.filter((n) => within(n, header) && n.tag === 'a' && n.attrs['data-cta'] === 'estimate' && n.attrs['data-placement'] === 'header');
-    if (!he.length) fail('header: estimate button a[data-cta="estimate"][data-placement="header"]', route);
+    if (kind.type === 'thankyou') {
+      // Someone who just sent a request is offered the phone, not another estimate.
+      if (he.length) fail('header: /thank-you/ must not ask for another estimate', route);
+    } else if (!he.length) fail('header: estimate button a[data-cta="estimate"][data-placement="header"]', route);
     else if (!he[0].attrs.href) fail('header: estimate button needs an href', route);
   }
 
@@ -576,10 +594,13 @@ for (const { file, route } of pages) {
 
   // Mobile bar
   const bars = q((n) => n.tag === 'div' && hasClass(n, 'mobile-bar'));
-  if (!bars.length) (utility ? warn : fail)('mobile bar: <div class="mobile-bar"> with call and estimate', route);
+  if (kind.type === 'thankyou') { if (bars.length) fail('mobile bar: /thank-you/ carries no estimate bar', route); }
+  else if (!bars.length) (utility ? warn : fail)('mobile bar: <div class="mobile-bar"> with call and estimate', route);
   else {
     const b = bars[0];
-    if (!N.some((n) => within(n, b) && n.tag === 'a' && n.attrs['data-contact'] === 'phone')) fail('mobile bar: needs a[data-contact="phone"]', route);
+    const barPhone = N.find((n) => within(n, b) && n.tag === 'a' && n.attrs['data-contact'] === 'phone');
+    if (!barPhone) fail('mobile bar: needs a[data-contact="phone"]', route);
+    else if (!textOf(doc, barPhone).includes('756-8915')) fail('mobile bar: the call button shows the number itself', route);
     if (!N.some((n) => within(n, b) && n.tag === 'a' && n.attrs['data-cta'] === 'estimate')) fail('mobile bar: needs a[data-cta="estimate"]', route);
   }
 
@@ -669,6 +690,12 @@ for (const { file, route } of pages) {
     if (!title.toLowerCase().includes(kind.city.name.toLowerCase())) fail('city hubs: title must name the city', `${route} "${title}"`);
   }
   if (kind.type === 'service' && kind.service.h1 && squash(h1Text) !== squash(kind.service.h1)) warn('service pages: H1 differs from site-copy.json', `${route} "${h1Text}"`);
+
+  // Permanent and landscape lighting stay up: their pages must not promise a season-end takedown.
+  if (/^\/(?:permanent-lighting|landscape-lighting)\//.test(route)) {
+    const takedown = textOf(doc, N.find(tagIs('main')) || doc.root).match(/\bwe take everything down\b|\bIn-season service and takedown\b|\bthe whole season covered\b/i);
+    if (takedown) fail('copy: permanent and landscape pages must not promise a takedown', `${route}: "${takedown[0]}"`);
+  }
 
   // GTM and attribution modes
   const gtmRefs = /googletagmanager\.com/.test(html);

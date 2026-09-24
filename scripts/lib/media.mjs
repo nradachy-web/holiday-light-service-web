@@ -43,8 +43,9 @@ export function createMedia({ url, mediaItem, tinyPosters = {} }) {
   const caption = (name) => mediaItem(name).caption;
 
   // A captioned figure. The caption always comes from media.json.
-  function figure(name, { sizes, cls = '', eager = false, focal, ratio } = {}) {
-    return `<figure class="${cls}"${ratio ? ` style="--ratio:${ratio}"` : ''}>${photo(name, { sizes, eager, focal })}<figcaption>${esc(caption(name))}</figcaption></figure>`;
+  function figure(name, { sizes, cls = '', eager = false, focal, ratio, frame } = {}) {
+    const style = [ratio ? `--ratio:${ratio}` : '', frame ? `--frame:${frame}` : ''].filter(Boolean).join(';');
+    return `<figure class="${cls}"${style ? ` style="${style}"` : ''}>${photo(name, { sizes, eager, focal })}<figcaption>${esc(caption(name))}</figcaption></figure>`;
   }
 
   /**

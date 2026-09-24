@@ -157,7 +157,7 @@ const STILLS = [
     uses: ['services-commercial', 'landing-commercial', 'our-work', 'closing'] },
   { src: [RAW_A, 'Dronegenuity17.MOV'], t: 16.0, name: 'tree-lights-closeup', tone: 'night', focal: '55% 50%',
     subject: 'Municipal tree lighting',
-    caption: 'Dense multicolor lighting on a giant evergreen, seen up close.',
+    caption: 'Dense multicolor lighting on a giant evergreen, seen up close, Northern Michigan.',
     alt: 'A close view of a large evergreen densely wrapped in red, green, blue and white lights against a dark evening sky and water.',
     uses: ['services-commercial', 'our-work', 'about'] },
   { src: [RAW_A, 'Dronegenuity9.MOV'], t: 30.0, name: 'waterfront-tree-dusk', tone: 'dusk', focal: '60% 45%',

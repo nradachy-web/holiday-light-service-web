@@ -6,9 +6,11 @@ import { esc } from './html.mjs';
 import { icon } from './icons.mjs';
 import { BUSINESS as B } from './config.mjs';
 
-export const LIGHTS = ['Roofline', 'Trees and shrubs', 'Entrance or sign', 'Building outline', 'Bistro lights', 'Permanent lighting', 'Landscape lighting', 'Not sure yet'];
+export const LIGHTS = ['Roofline', 'Trees and shrubs', 'Entrance or sign', 'Building outline', 'Poles and lampposts', 'Bistro lights', 'Permanent lighting', 'Landscape lighting', 'Not sure yet'];
 export const PROPERTIES = ['Home', 'HOA or subdivision', 'Business', 'Downtown or municipality'];
 export const PROPERTY_SHORT = { Home: 'Home', 'HOA or subdivision': 'HOA or entrance', Business: 'Business', 'Downtown or municipality': 'Downtown' };
+// Without a city the tag names the property type ("For a home"), with a house icon rather than a map pin.
+export const PROPERTY_FOR = { Home: 'For a home', 'HOA or subdivision': 'For an HOA or entrance', Business: 'For a business', 'Downtown or municipality': 'For a downtown' };
 
 let formCount = 0;
 export const resetFormIds = () => {
@@ -40,10 +42,12 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
     .map((g) => `<optgroup label="${esc(g.county)}">${g.cities.map((c) => `<option value="${c.slug}"${c.slug === city ? ' selected' : ''}>${esc(c.display)}</option>`).join('')}</optgroup>`)
     .join('')}<option value="other">Somewhere else in Michigan</option></select></div>`;
   const address = `<div class="field"><label for="${uid}-address">Street address <span class="opt">(optional)</span></label><input id="${uid}-address" name="address" type="text" autocomplete="street-address"></div>`;
-  const contact = `<div class="field"><label for="${uid}-name">Name</label><input id="${uid}-name" name="name" type="text" autocomplete="name" required></div>
+  // Each field has an empty error slot; site.js fills it and links it with aria-describedby only while invalid.
+  const err = (f) => `<p class="field-err" id="${uid}-${f}-err" data-err hidden></p>`;
+  const contact = `<div class="field"><label for="${uid}-name">Name</label><input id="${uid}-name" name="name" type="text" autocomplete="name" required>${err('name')}</div>
       <div class="field-row">
-        <div class="field"><label for="${uid}-phone">Phone</label><input id="${uid}-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required></div>
-        <div class="field"><label for="${uid}-email">Email <span class="opt">(optional)</span></label><input id="${uid}-email" name="email" type="email" autocomplete="email"></div>
+        <div class="field"><label for="${uid}-phone">Phone</label><input id="${uid}-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>${err('phone')}</div>
+        <div class="field"><label for="${uid}-email">Email <span class="opt">(optional)</span></label><input id="${uid}-email" name="email" type="email" autocomplete="email">${err('email')}</div>
       </div>`;
 
   const stepDefs =
@@ -81,7 +85,7 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
 <form class="quote" data-quote data-placement="${esc(placement)}" data-steps="${total}" data-mode="${live ? 'live' : 'preview'}"${formAttrs} aria-labelledby="${uid}-title"${cityObj ? ` data-city="${cityObj.slug}"` : ''}>
   <div class="q-head">
     <h2 class="q-title" id="${uid}-title" tabindex="-1">${esc(heading)}</h2>
-    <p class="q-context" data-context${ctxText ? '' : ' hidden'}>${icon('pin')}<span data-context-text>${esc(ctxText)}</span></p>
+    <p class="q-context" data-context${cityObj ? ' data-has-city' : ''}${ctxText ? '' : ' hidden'}>${icon('pin', 'i-pin')}${icon('home', 'i-prop')}<span data-context-text>${esc(ctxText)}</span></p>
     <ol class="q-dots" aria-hidden="true">${stepDefs.map((s, i) => `<li${i === 0 ? ' class="is-on"' : ''}><span class="q-bulb"></span>${s.dot}</li>`).join('')}</ol>
   </div>
   ${hidden}
@@ -105,5 +109,5 @@ export function contextText(property, cityObj) {
   const p = property ? PROPERTY_SHORT[property] || property : '';
   if (p && cityObj) return `${p} in ${cityObj.display}`;
   if (cityObj) return `Estimate for ${cityObj.display}`;
-  return p;
+  return property ? PROPERTY_FOR[property] || p : '';
 }

@@ -7,15 +7,34 @@ import { crumbs } from '../blocks.mjs';
 import { closing, composition } from '../sections.mjs';
 import { quoteForm } from '../form.mjs';
 import { LOCAL_SERVICES } from '../config.mjs';
+import { closingPhoto } from './landings.mjs';
 
-// Hub heroes lean on footage stills and commercial work so they differ from the residential landing pages.
-const HUB_PHOTOS = [['downtown-storefront-wraps'], ['commercial-building-lit-trees'], ['pavilion-roofline-lights'], ['park-tree-and-wraps'], ['downtown-sidewalk-night']];
-// Warm white work for the "Around <city>" section, never the same frame as the hero above it.
-// Captions here carry no place name, so nothing beside the city copy reads as work done elsewhere.
-const AROUND_PHOTOS = ['roofline-large-home', 'downtown-wrapped-trees-night', 'evergreens-warm-white', 'crew-bistro-install', 'downtown-sidewalk-wraps'];
+// Hub heroes pair a home with commercial work (a hub covers every service), using only our own photos
+// whose captions name no place: a "Northern Michigan" caption right under "Holiday Lighting in <City>"
+// undercuts the local promise. Each pair leads with a landscape frame, so the hero is subject-filled.
+const HUB_PHOTOS = [
+  ['commercial-building-lit-trees', 'evergreens-warm-white'],
+  ['downtown-wrapped-trees-night', 'evergreens-warm-white'],
+  ['roofline-large-home', 'downtown-sidewalk-wraps'],
+  ['commercial-building-lit-trees', 'downtown-sidewalk-wraps'],
+  ['bucket-truck-roofline-install', 'downtown-sidewalk-wraps'],
+];
+// The "Around <city>" photo: warm white or crew work, never a frame already in the hero above it.
+const AROUND_PHOTOS = ['downtown-wrapped-trees-night', 'roofline-large-home', 'crew-bistro-install', 'commercial-building-lit-trees', 'evergreens-warm-white'];
+const aroundFor = (hero, k) => {
+  for (let t = 0; t < AROUND_PHOTOS.length; t++) {
+    const n = AROUND_PHOTOS[(k + t) % AROUND_PHOTOS.length];
+    if (!hero.includes(n)) return n;
+  }
+  return AROUND_PHOTOS[0];
+};
 
 export default function hubPages(ctx) {
   const { cities, copy, colorOf } = ctx.content;
+  // Nearby communities in both directions: the ones this city lists plus the ones that list it.
+  const back = new Map(cities.map((c) => [c.slug, []]));
+  for (const c of cities) for (const n of c.neighbors || []) back.get(n)?.push(c.slug);
+  const nearby = new Map(cities.map((c) => [c.slug, [...new Set([...(c.neighbors || []), ...back.get(c.slug).sort()])]]));
   const pages = cities.map((city) => ({
     path: `/service-area/${city.slug}/`,
     type: 'hub',
@@ -24,6 +43,7 @@ export default function hubPages(ctx) {
     title: city.hub.title,
     description: city.hub.meta_description,
     estimateHref: '#estimate',
+    ...ctx.og.card('home'),
     crumbs: [
       { name: 'Service area', href: '/service-area/' },
       { name: city.display, href: `/service-area/${city.slug}/` },
@@ -39,7 +59,7 @@ export default function hubPages(ctx) {
     body: (ctx, page) => {
       const k = colorOf(city.slug, HUB_PHOTOS.length, 7);
       // The "Around <city>" photo is a different frame from the hero, also rotated by neighbor coloring.
-      return hubBody(ctx, page, city, HUB_PHOTOS[k], AROUND_PHOTOS[(k + 1) % AROUND_PHOTOS.length]);
+      return hubBody(ctx, page, city, HUB_PHOTOS[k], aroundFor(HUB_PHOTOS[k], k + 1), nearby.get(city.slug));
     },
   }));
 
@@ -56,7 +76,7 @@ export default function hubPages(ctx) {
   return pages;
 }
 
-function hubBody(ctx, page, city, photos, aroundPhoto) {
+function hubBody(ctx, page, city, photos, aroundPhoto, nearbySlugs) {
   const { service } = ctx.content;
   const form = quoteForm(ctx, page, { placement: 'hero', anchor: 'estimate', city: city.slug, heading: 'Get my free estimate' });
   const hero = splitHero(ctx, page, {
@@ -72,7 +92,9 @@ function hubBody(ctx, page, city, photos, aroundPhoto) {
     const s = service(slug);
     return `<li class="svc-card" data-reveal style="--d:${i * 80}ms"><a href="${ctx.url(`/${slug}/${city.slug}/`)}"><span class="svc-card-k">${esc(s.short)}</span><span class="svc-card-t">${esc(city.pages[slug].h1)}</span><span class="svc-card-s">${esc(city.hub.highlights[i] || s.summary)}</span><span class="svc-card-go">${icon('arrow')}</span></a></li>`;
   }).join('');
-  const neighbors = (city.neighbors || []).map((n) => ctx.content.city(n));
+  const neighbors = nearbySlugs.map((n) => ctx.content.city(n));
+  const HC = ctx.content.copy.service_area.hub_closing;
+  const fill = (t) => t.replace(/\{city\}/g, city.name);
   return `${hero}
 
 <section class="sec sec-local" aria-labelledby="local-title">
@@ -101,7 +123,7 @@ function hubBody(ctx, page, city, photos, aroundPhoto) {
   </div>
 </section>
 
-${closing(ctx, page, { heading: ctx.content.copy.home.closing.heading, text: ctx.content.copy.home.closing.text, eyebrow: `Free estimate in ${city.display}`, photoName: 'town-blue-hour-aerial', anchor: 'estimate-close', formOpts: { city: city.slug } })}`;
+${closing(ctx, page, { heading: fill(HC.heading), text: fill(HC.text), eyebrow: `Free estimate in ${city.display}`, photoName: closingPhoto('hub', [...photos, aroundPhoto]), anchor: 'estimate-close', formOpts: { city: city.slug } })}`;
 }
 
 function directoryBody(ctx, page, SA) {
@@ -126,7 +148,7 @@ function directoryBody(ctx, page, SA) {
     <h1 class="page-title" id="page-title" data-rise>${SA.h1.split(' ').map((w, i) => `<span class="w" style="--i:${i}"><span>${esc(w)}</span></span>`).join(' ')}</h1>
     <div class="sh-deco">${STRINGS.eave()}</div>
     <p class="page-sub" data-fade style="--d:300ms">${esc(SA.intro)}</p>
-    <div class="page-actions" data-fade style="--d:420ms"><a class="btn btn-glow" href="#estimate" data-cta="estimate" data-placement="hero"><span>Get my free estimate</span>${icon('arrow')}</a></div>
+    <div class="page-actions" data-fade style="--d:420ms" data-bar-hide><a class="btn btn-glow" href="#estimate" data-cta="estimate" data-placement="hero"><span>Get my free estimate</span>${icon('arrow')}</a></div>
   </div>
   <div class="wrap page-hero-foot"><p class="media-cap">${esc(v.caption)}</p>${v.toggle}</div>
 </section>
@@ -135,5 +157,5 @@ function directoryBody(ctx, page, SA) {
   <div class="wrap dir">${blocks}</div>
 </div>
 
-${closing(ctx, page, { heading: ctx.content.copy.home.closing.heading, text: ctx.content.copy.home.closing.text, photoName: 'town-harbor-aerial', anchor: 'estimate' })}`;
+${closing(ctx, page, { heading: SA.closing.heading, text: SA.closing.text, photoName: 'town-harbor-aerial', anchor: 'estimate' })}`;
 }

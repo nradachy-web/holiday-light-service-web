@@ -14,6 +14,11 @@
   var PHONE = '(248) 756-8915';
   var TEL = 'tel:+12487568915';
   var PROPERTY_SHORT = { 'Home': 'Home', 'HOA or subdivision': 'HOA or entrance', 'Business': 'Business', 'Downtown or municipality': 'Downtown' };
+  var PROPERTY_FOR = { 'Home': 'For a home', 'HOA or subdivision': 'For an HOA or entrance', 'Business': 'For a business', 'Downtown or municipality': 'For a downtown' };
+  // Ad final URLs can preset the card: ?property=hoa&lights=roofline,trees
+  var URL_PROPERTY = { home: 'Home', hoa: 'HOA or subdivision', business: 'Business', downtown: 'Downtown or municipality' };
+  var URL_LIGHTS = { roofline: 'Roofline', trees: 'Trees and shrubs', entrance: 'Entrance or sign', building: 'Building outline', poles: 'Poles and lampposts', bistro: 'Bistro lights', permanent: 'Permanent lighting', landscape: 'Landscape lighting', unsure: 'Not sure yet' };
+  var RECAP_KEY = 'hls_request';
 
   function $$(sel, el) { return Array.prototype.slice.call((el || d).querySelectorAll(sel)); }
   function push(obj) { try { w.dataLayer.push(obj); } catch (e) { /* never break the page */ } }
@@ -27,6 +32,8 @@
     d.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[data-contact]');
       if (a) push({ event: 'contact_click', channel: a.getAttribute('data-contact'), placement: a.getAttribute('data-placement') || '' });
+      var cta = e.target.closest && e.target.closest('a[data-cta="estimate"]');
+      if (cta) push({ event: 'estimate_cta_click', placement: cta.getAttribute('data-placement') || '' });
     }, true);
   });
 
@@ -44,12 +51,14 @@
       btn.setAttribute('aria-expanded', String(open));
       panel.hidden = !open;
       hdr.classList.toggle('menu-open', open);
+      // The panel fills the screen below the header; the page behind it does not scroll.
+      root.classList.toggle('menu-lock', open);
       if (!open && focusBtn) btn.focus();
     };
     btn.addEventListener('click', function () { setOpen(btn.getAttribute('aria-expanded') !== 'true'); });
     panel.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
     d.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) setOpen(false, true); });
-    w.addEventListener('resize', function () { if (w.innerWidth > 1120 && !panel.hidden) setOpen(false); });
+    w.addEventListener('resize', function () { if (w.innerWidth >= 1200 && !panel.hidden) setOpen(false); });
   });
 
   /* ---- Background videos: attached after load and idle; never on reduced motion, Save-Data or 2g/3g ---- */
@@ -228,13 +237,13 @@
         if (now) now.hidden = !isNow || planning;
         var here = st.querySelector('.st-here');
         if (here) here.hidden = i !== current[0];
-        if (isNow) names.push(st.querySelector('h3').textContent);
+        if (isNow) names.push(st.getAttribute('data-phase') || st.querySelector('h3').textContent.toLowerCase());
       });
       var summary = el.querySelector('[data-season-summary]');
       if (summary) {
         summary.innerHTML = planning
           ? 'The season has not started yet, which makes now the easiest time to <strong>plan a design</strong>.'
-          : 'Where the season stands today: <strong>' + names.join('</strong> and <strong>') + '</strong>. Booking earlier gives you more date options.';
+          : 'Where the season stands today: <strong>' + names.join(' and ') + '</strong>. Booking earlier gives you more date options.';
         summary.hidden = false;
       }
     });
@@ -309,14 +318,45 @@
   }
   function updateContext(form) {
     var ctx = form.querySelector('[data-context]');
-    if (!ctx) return;
     var prop = checkedValue(form, 'property_type');
+    // "Planning for" pills show which property type the page's form is set to.
+    if (form.closest('#estimate')) {
+      $$('[data-plan-pill]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-preset-property') === prop)); });
+    }
+    if (!ctx) return;
     var p = prop ? PROPERTY_SHORT[prop] || prop : '';
     var city = cityLabel(form);
-    var text = p && city ? p + ' in ' + city : city ? 'Estimate for ' + city : p;
+    // A map pin only when a place is known; otherwise the tag names the property type with a house icon.
+    var text = p && city ? p + ' in ' + city : city ? 'Estimate for ' + city : prop ? PROPERTY_FOR[prop] || p : '';
     ctx.hidden = !text;
+    if (city) ctx.setAttribute('data-has-city', ''); else ctx.removeAttribute('data-has-city');
     var t = ctx.querySelector('[data-context-text]');
     if (t) t.textContent = text;
+  }
+  // Presets from the page URL, applied to every quote form on the page.
+  function urlPresets(form) {
+    var q;
+    try { q = new URLSearchParams(w.location.search); } catch (e) { return; }
+    var prop = q.get('property');
+    if (prop) {
+      var v = URL_PROPERTY[prop.toLowerCase()] || prop;
+      var r = form.querySelector('input[name="property_type"][value="' + v.replace(/"/g, '') + '"]');
+      if (r) r.checked = true;
+    }
+    var lights = q.get('lights');
+    if (lights) {
+      lights.split(',').forEach(function (k) {
+        k = k.trim();
+        if (!k) return;
+        var val = URL_LIGHTS[k.toLowerCase()] || k;
+        var c = form.querySelector('input[name="what_to_light"][value="' + val.replace(/"/g, '') + '"]');
+        if (c) c.checked = true;
+      });
+    }
+  }
+  function headerHeight() {
+    var h = d.querySelector('[data-header] .hdr');
+    return h ? h.getBoundingClientRect().height : 70;
   }
 
   function initForm(form) {
@@ -333,6 +373,7 @@
     var live = form.getAttribute('data-mode') === 'live';
     var cur = 0;
     var started = false;
+    var reached = {};
     if (submit && submit.hasAttribute('data-preview-lock')) submit.disabled = false;
 
     function start() {
@@ -368,16 +409,27 @@
         var first = steps[n].querySelector('input:not([type="hidden"]), select');
         if (first) first.focus({ preventScroll: true });
       }
-      if (moved && n > 0) push({ event: 'estimate_step', step: n + 1, placement: placement });
+      // A new step can open with its heading scrolled up under the fixed header (Next sits low in a
+      // tall first step on phones). Bring the card head back into view.
+      if (moved) {
+        var head = form.querySelector('.q-head');
+        var wrap = form.closest('.quote-wrap');
+        if (head && wrap && head.getBoundingClientRect().top < headerHeight()) scrollToEl(wrap, 'start');
+      }
+      // One estimate_step per step reached, so Back and Next again do not inflate the funnel.
+      if (moved && n > 0 && !reached[n]) {
+        reached[n] = true;
+        push({ event: 'estimate_step', step: n + 1, placement: placement });
+      }
     }
     form.addEventListener('focusin', function (e) { if (e.target.matches('input, select, button')) start(); });
     form.addEventListener('change', function (e) {
       start();
       if (e.target.name === 'property_type' || e.target.name === 'city') updateContext(form);
-      if (e.target.getAttribute('aria-invalid') === 'true' && e.target.value.trim()) e.target.removeAttribute('aria-invalid');
+      if (e.target.getAttribute('aria-invalid') === 'true' && e.target.value.trim()) fieldError(e.target, '');
     });
     form.addEventListener('input', function (e) {
-      if (e.target.getAttribute('aria-invalid') === 'true' && e.target.value.trim()) e.target.removeAttribute('aria-invalid');
+      if (e.target.getAttribute('aria-invalid') === 'true' && e.target.value.trim()) fieldError(e.target, '');
     });
     if (next) next.addEventListener('click', function () { start(); go(cur + 1, true); });
     if (back) back.addEventListener('click', function () { go(cur - 1, true); });
@@ -386,17 +438,30 @@
       for (var i = 0; i < steps.length; i++) if (steps[i].contains(el)) return i;
       return steps.length - 1;
     }
+    // Inline messages sit under each field and are linked with aria-describedby only while invalid.
+    function fieldError(f, msg) {
+      var err = f && f.parentNode.querySelector('[data-err]');
+      if (msg) {
+        f.setAttribute('aria-invalid', 'true');
+        if (err) { err.textContent = msg; err.hidden = false; f.setAttribute('aria-describedby', err.id); }
+      } else if (f) {
+        f.removeAttribute('aria-invalid');
+        f.removeAttribute('aria-describedby');
+        if (err) { err.textContent = ''; err.hidden = true; }
+      }
+    }
     function validate() {
       var name = form.querySelector('[name="name"]');
       var phone = form.querySelector('[name="phone"]');
       var email = form.querySelector('[name="email"]');
       var bad = [];
-      [name, phone].forEach(function (f) { if (f) f.removeAttribute('aria-invalid'); });
-      if (email) email.removeAttribute('aria-invalid');
-      if (name && !name.value.trim()) bad.push([name, 'your name']);
-      if (phone && phone.value.replace(/\D/g, '').length < 7) bad.push([phone, 'a phone number']);
-      if (email && email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) bad.push([email, 'a valid email, or leave it blank']);
-      bad.forEach(function (b) { b[0].setAttribute('aria-invalid', 'true'); });
+      [name, phone, email].forEach(function (f) { if (f) fieldError(f, ''); });
+      if (name && !name.value.trim()) bad.push([name, 'your name', 'Please add your name.']);
+      var digits = phone ? phone.value.replace(/\D/g, '').length : 10;
+      if (phone && !digits) bad.push([phone, 'a phone number', 'Please add a phone number.']);
+      else if (phone && digits < 10) bad.push([phone, 'a phone number with area code', 'Please add a phone number with area code.']);
+      if (email && email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) bad.push([email, 'a valid email, or leave it blank', 'Please check the email, or leave it blank.']);
+      bad.forEach(function (b) { fieldError(b[0], b[2]); });
       return bad;
     }
     function setStatus(html, isError) {
@@ -411,6 +476,9 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       start();
+      // Enter in a field before the last step (implicit submission) moves on instead of validating
+      // fields the visitor has not seen yet.
+      if (cur < steps.length - 1) { go(cur + 1, true); return; }
       var hp = form.querySelector('[name="botcheck"]');
       if (hp && hp.checked) return;
       var bad = validate();
@@ -459,15 +527,22 @@
         .then(function (res) { return res.json().catch(function () { return {}; }).then(function (j) { return { ok: res.ok, j: j }; }); })
         .then(function (r) {
           if (!r.ok || !r.j || r.j.success !== true) throw new Error('not accepted');
-          // A lead counts only after the form service confirms it.
-          push({ event: 'generate_lead', property_type: prop, city: citySlug, city_name: cityName, placement: placement });
           try {
             if (w.apexAttribution && typeof w.apexAttribution.attach === 'function') {
               w.apexAttribution.attach({ name: payload.name, email: payload.email, phone: payload.phone, message: [payload.what_to_light, prop, cityName, payload.address].filter(Boolean).join(' | ') });
             }
           } catch (err) { /* attribution is additive only */ }
+          // The thank-you page repeats the choices back (never name, phone or email).
+          try { w.sessionStorage.setItem(RECAP_KEY, [payload.what_to_light, prop, cityName].filter(Boolean).join(' · ')); } catch (err) { /* optional */ }
           var thanks = d.body.getAttribute('data-thanks') || '/thank-you/';
-          setTimeout(function () { w.location.href = thanks; }, 60);
+          var left = false;
+          var leave = function () { if (!left) { left = true; w.location.href = thanks; } };
+          // A lead counts only after the form service confirms it. With Tag Manager on the page the
+          // redirect waits for its tags (eventCallback, capped by eventTimeout) so the conversion is not
+          // cut off by the navigation; without it there is nothing to wait for.
+          var gtm = !!(w.google_tag_manager && Object.keys(w.google_tag_manager).some(function (k) { return /^GTM-/.test(k); }));
+          push({ event: 'generate_lead', property_type: prop, city: citySlug, city_name: cityName, placement: placement, eventCallback: leave, eventTimeout: 1500 });
+          setTimeout(leave, gtm ? 1700 : 150);
         })
         .catch(function () {
           submit.disabled = false;
@@ -475,6 +550,7 @@
         });
     });
 
+    urlPresets(form);
     go(0, false);
     updateContext(form);
     return { form: form, go: go, wrap: form.closest('.quote-wrap') };
@@ -498,8 +574,10 @@
         if (r) { r.checked = true; flash = r.closest('.chip'); }
       }
       if (light) {
-        var c = form.querySelector('input[name="what_to_light"][value="' + light + '"]');
-        if (c) { c.checked = true; flash = c.closest('.chip'); }
+        light.split(',').forEach(function (l) {
+          var c = form.querySelector('input[name="what_to_light"][value="' + l.trim() + '"]');
+          if (c) { c.checked = true; flash = flash || c.closest('.chip'); }
+        });
       }
       updateContext(form);
       if (api) api.go(0, false);
@@ -513,11 +591,13 @@
     });
   });
 
-  /* ---- Sticky mobile bar: steps aside while any quote form (or the home hero CTAs) is on screen ---- */
+  /* ---- Sticky mobile bar: steps aside while a form's controls (or a hero action row) are on screen.
+     Only the step fieldsets and the action buttons count, not the whole card, so a sliver of the
+     card's footer does not hide the bar and its phone number. ---- */
   safe('mobile-bar', function () {
     var bar = d.querySelector('[data-mobile-bar]');
     if (!bar || !('IntersectionObserver' in w)) return;
-    var targets = $$('form[data-quote], [data-bar-hide]');
+    var targets = $$('form[data-quote] [data-step], form[data-quote] .q-actions, [data-bar-hide]');
     var visible = new Set();
     var sync = function () { bar.classList.toggle('is-hidden', visible.size > 0); };
     var io = new IntersectionObserver(function (entries) {
@@ -540,8 +620,34 @@
         if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
       });
     }, { rootMargin: '0px 0px -6% 0px', threshold: 0.01 });
+    var pending = [];
     $$('[data-reveal]').forEach(function (el) {
-      if (el.getBoundingClientRect().top > vh * 0.94) { el.classList.add('pre'); io.observe(el); }
+      if (el.getBoundingClientRect().top > vh * 0.94) { el.classList.add('pre'); io.observe(el); pending.push(el); }
     });
+    // Safety net: a block the visitor has already scrolled past is revealed even if the observer
+    // missed it (a fast fling, a jump link or a busy main thread that skipped frames).
+    var ticking = false;
+    function sweep() {
+      ticking = false;
+      var h = w.innerHeight;
+      pending = pending.filter(function (el) {
+        if (el.classList.contains('in')) return false;
+        if (el.getBoundingClientRect().top < h) { el.classList.add('in'); io.unobserve(el); return false; }
+        return true;
+      });
+      if (!pending.length) w.removeEventListener('scroll', onScroll);
+    }
+    function onScroll() { if (!ticking) { ticking = true; setTimeout(sweep, 120); } }
+    if (pending.length) w.addEventListener('scroll', onScroll, { passive: true });
+  });
+  /* ---- Thank-you page: repeat the request back from this session ---- */
+  safe('recap', function () {
+    var el = d.querySelector('[data-request-recap]');
+    if (!el) return;
+    var v = '';
+    try { v = w.sessionStorage.getItem(RECAP_KEY) || ''; } catch (e) { return; }
+    if (!v) return;
+    el.textContent = 'Your request: ' + v;
+    el.hidden = false;
   });
 })();

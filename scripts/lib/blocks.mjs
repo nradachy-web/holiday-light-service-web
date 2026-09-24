@@ -103,6 +103,8 @@ const WINDOWS = [
   ['11-26', '01-01'],
   ['01-02', '01-31'],
 ];
+// How each phase reads inside the live summary sentence ("Where the season stands today: booking and design.").
+const PHASES = ['booking', 'design', 'installation', 'in-season service', 'takedown'];
 export function seasonString(season) {
   const n = season.length;
   const w = 1000;
@@ -116,7 +118,7 @@ export function seasonString(season) {
   <svg class="season-wire" viewBox="0 0 ${w} 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}"/></svg>
   <ol class="stations">${season
     .map(
-      (s, i) => `<li class="station" data-from="${WINDOWS[i][0]}" data-to="${WINDOWS[i][1]}">
+      (s, i) => `<li class="station" data-from="${WINDOWS[i][0]}" data-to="${WINDOWS[i][1]}" data-phase="${PHASES[i]}">
       <span class="st-bulb" aria-hidden="true"><svg viewBox="-6 -12 12 14" focusable="false"><use href="#c9-off"/><use class="st-on" href="#c9-on"/></svg></span>
       <span class="st-here" hidden>We are here</span>
       <p class="st-when">${esc(s.when)} <span class="st-now" hidden>Now</span></p>
@@ -134,16 +136,21 @@ export function switcher(ctx, cats) {
   const { photo, caption } = ctx.media;
   const sizesFor = (layout, k) => {
     if (layout === 'tri') return '(min-width: 1000px) 290px, 50vw';
+    if (layout === 'native') return '(min-width: 761px) 560px, 100vw';
     if (layout === 'pair') return k === 0 ? '(min-width: 1000px) 540px, 100vw' : '(min-width: 1000px) 330px, 50vw';
     return '(min-width: 1000px) 880px, 100vw';
   };
   const panels = cats
     .map((c, i) => {
       const panes = c.panes
-        .map((p, k) => `<figure class="pane${c.mpanes.includes(p) ? '' : ' pane-dsk'}">${photo(p, { sizes: sizesFor(c.layout, k) })}<figcaption>${esc(caption(p))}</figcaption></figure>`)
+        .map((p, k) => {
+          const m = ctx.content.mediaItem(p);
+          const ar = c.layout === 'native' ? ` style="--ar:${m.width}/${m.height}"` : '';
+          return `<figure class="pane${c.mpanes.includes(p) ? '' : ' pane-dsk'}"${ar}>${photo(p, { sizes: sizesFor(c.layout, k) })}<figcaption>${esc(caption(p))}</figcaption></figure>`;
+        })
         .join('');
       return `<div class="sw-panel${i === 0 ? ' is-active' : ''}" id="sw-p-${c.id}" role="tabpanel" aria-labelledby="sw-t-${c.id}" data-panel>
-  <div class="sw-media" data-layout="${c.layout}" data-mlayout="${c.mpanes.length > 1 ? 'pair' : 'single'}">${panes}</div>
+  <div class="sw-media" data-layout="${c.layout}" data-mlayout="${c.layout === 'native' ? 'native' : c.mpanes.length > 1 ? 'pair' : 'single'}">${panes}</div>
   <div class="sw-info">
     <p class="sw-count"><span>${pad2(i + 1)}</span> / ${pad2(cats.length)}</p>
     <h3>${esc(c.title)}</h3>
@@ -165,5 +172,22 @@ export function switcher(ctx, cats) {
     <button class="vtoggle vtoggle-sm sw-toggle" type="button" data-sw-toggle>${icon('pause', 'i-pause')}${icon('play', 'i-play')}<span class="vtoggle-label" data-sw-label>Pause slideshow</span></button>
   </div>
   <div class="sw-stage">${panels}</div>
+</div>`;
+}
+
+// "Planning for" row (commercial pages): property-type pills that preset the page's form, plus text
+// links to each commercial property page. site.js keeps aria-pressed in step with the form.
+const PLAN = [
+  ['Business', 'Business'],
+  ['HOA or subdivision', 'HOA entrance'],
+  ['Downtown or municipality', 'Downtown district'],
+];
+export function planRow(ctx, { current = 'Business' } = {}) {
+  const verticals = ctx.content.copy.verticals;
+  const links = verticals.map((v, i) => `${i ? (i === verticals.length - 1 ? ' and ' : ', ') : ''}<a href="${ctx.url(`/commercial/${v.slug}/`)}">${esc(v.name.toLowerCase().replace(/^hoa/, 'HOA'))}</a>`).join('');
+  return `<div class="plan" data-plan>
+  <p class="plan-h" id="plan-h">Planning for</p>
+  <div class="plan-pills" role="group" aria-labelledby="plan-h">${PLAN.map(([v, l]) => `<button class="pill pill-sm" type="button" aria-pressed="${v === current}" data-preset-property="${esc(v)}" data-plan-pill>${esc(l)}</button>`).join('')}</div>
+  <p class="plan-links">More on ${links}.</p>
 </div>`;
 }

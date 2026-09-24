@@ -10,7 +10,8 @@
     "test": "node scripts/browser-check.mjs",
     "serve": "python3 -m http.server 4188 --directory dist",
     "lighthouse": "node scripts/lighthouse.mjs",
-    "preview": "node scripts/browser-check.mjs --serve"
+    "preview": "node scripts/browser-check.mjs --serve",
+    "live-check": "node scripts/live-check.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

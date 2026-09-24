@@ -19,6 +19,7 @@ import { loadContent } from './lib/content.mjs';
 import { createMedia } from './lib/media.mjs';
 import { renderPage } from './lib/shell.mjs';
 import { esc } from './lib/html.mjs';
+import { GUIDE_PHOTOS } from './lib/pagekit.mjs';
 
 const started = Date.now();
 const cfg = readConfig();
@@ -58,11 +59,17 @@ async function ensureFonts() {
   }
 }
 
-// Social preview images, cropped from the real footage posters.
+// Social preview images. Brand pages crop the Northern Michigan footage posters (their alt text names
+// the region). Local pages and the permanent and landscape pages share a card cropped from one of our
+// own photos whose caption names no place, so a shared local link never implies work in that town.
 async function ogImages() {
+  const largest = (m) => Object.entries(m.files.webp).sort((a, b) => Number(b[0]) - Number(a[0]))[0][1];
   const jobs = [
     ['holiday-light-service.jpg', content.mediaItem('hero-tree').files.poster.webp['1920'], 'attention'],
     ['commercial-holiday-lighting.jpg', content.mediaItem('downtown-wraps').files.poster.webp['1920'], 'centre'],
+    ...Object.values(OG_CARDS).map((c) => [path.basename(c.image), largest(content.mediaItem(c.photo)), c.position]),
+    // One card per guide, cropped from the guide's own photo.
+    ...content.copy.guides.map((g) => [`guide-${g.slug}.jpg`, largest(content.mediaItem(GUIDE_PHOTOS[g.slug] || 'roofline-large-home')), 'attention']),
   ];
   const dir = path.join(DIST, 'assets/og');
   await fsp.mkdir(dir, { recursive: true });
@@ -70,6 +77,12 @@ async function ogImages() {
     await sharp(path.join(PUBLIC, src)).resize(1200, 630, { fit: 'cover', position }).jpeg({ quality: 78, mozjpeg: true }).toFile(path.join(dir, name));
   }
 }
+
+// Our own photos for the local and permanent/landscape share cards (captions without a place name).
+const OG_CARDS = {
+  home: { image: '/assets/og/residential-roofline.jpg', photo: 'roofline-large-home', position: 'centre' },
+  building: { image: '/assets/og/commercial-building.jpg', photo: 'commercial-building-lit-trees', position: 'centre' },
+};
 
 // Light CSS minification: comments and redundant whitespace only.
 const minifyCss = (css) =>
@@ -98,7 +111,15 @@ async function main() {
     og: {
       default: '/assets/og/holiday-light-service.jpg',
       commercial: '/assets/og/commercial-holiday-lighting.jpg',
-      alt: 'A giant multicolor tree lit on the waterfront at night.',
+      alt: 'A giant multicolor tree lit on the waterfront at night, Northern Michigan.',
+      commercialAlt: 'Downtown street trees wrapped in warm white lights at night, Northern Michigan.',
+      guide: (slug) => `/assets/og/guide-${slug}.jpg`,
+      // Cards for local, permanent and landscape pages: { image, alt } with the alt from media.json.
+      card: (key, { seasonal = false } = {}) => {
+        const c = OG_CARDS[key];
+        const alt = content.mediaItem(c.photo).alt;
+        return { ogImage: c.image, ogAlt: seasonal ? `Seasonal holiday work: ${alt.charAt(0).toLowerCase()}${alt.slice(1)}` : alt };
+      },
     },
   };
 

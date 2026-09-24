@@ -150,7 +150,13 @@ function selectPages(dist) {
   add('/service-area/', 'area');
   const vertical = (copy.verticals || []).find((v) => /hoa/.test(v.slug)) || (copy.verticals || [])[0];
   if (vertical) add(`/commercial/${vertical.slug}/`, 'vertical');
-  for (const r of ['/our-work/', '/about/', '/faq/', '/contact/', '/process/']) add(r, 'other');
+  // The downtowns vertical carries the site's one frame-crossing headline over footage.
+  const film = (copy.verticals || []).find((v) => /downtown/.test(v.slug));
+  if (film) add(`/commercial/${film.slug}/`, 'vertical');
+  for (const r of ['/our-work/', '/about/', '/faq/', '/contact/', '/process/', '/guides/']) add(r, 'other');
+  const guide = (copy.guides || [])[0];
+  if (guide) add(`/guides/${guide.slug}/`, 'guide');
+  add('/privacy/', 'privacy');
   add('/thank-you/', 'thankyou');
   let list = wanted;
   if (process.env.PAGES) {
@@ -201,6 +207,28 @@ window.__qa = {
     return (p && p !== document.body ? __qa.sel(p) + ' > ' : '') + s;
   },
   text(el) { return (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60); },
+  clipped() {
+    const vw = document.documentElement.clientWidth;
+    const out = [];
+    const inScroller = (el) => { for (let e = el.parentElement; e; e = e.parentElement) { const cs = getComputedStyle(e); if (/auto|scroll/.test(cs.overflowX) && e.scrollWidth > e.clientWidth + 1) return true; } return false; };
+    for (const el of document.querySelectorAll('h1,h2,h3,p,a,button,li,figcaption,label,legend')) {
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      if (el.closest('[hidden],.sr-only,.sprite,[aria-hidden="true"],.skip-link,[inert],.mnav,.nav-sub,[data-rise]')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2 || !(el.innerText || '').trim() || inScroller(el)) continue;
+      if (r.right > vw + 1 || r.left < -1) { out.push(__qa.sel(el) + ' "' + __qa.text(el).slice(0, 24) + '" off screen (' + Math.round(r.left) + ' to ' + Math.round(r.right) + ' of ' + vw + ')'); continue; }
+      for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+        const acs = getComputedStyle(a);
+        if (/hidden|clip/.test(acs.overflowX) || /hidden|clip/.test(acs.overflow)) {
+          const ar = a.getBoundingClientRect();
+          if (r.right > ar.right + 1.5 || r.left < ar.left - 1.5) out.push(__qa.sel(el) + ' "' + __qa.text(el).slice(0, 24) + '" cut by ' + __qa.sel(a));
+          break;
+        }
+      }
+    }
+    return [...new Set(out)];
+  },
 };`;
 
 // ---------------------------------------------------------------------------
@@ -369,9 +397,19 @@ async function main() {
           const name = (el.getAttribute('aria-label') || '') + ' ' + (el.textContent || '');
           out[k] = { ok: __qa.present(el) && __qa.eff(el) > 0.9, covered, coveredBy: covered ? __qa.sel(hit) : '', visibleText: el.innerText.replace(/\s+/g, ' ').trim(), name: name.replace(/\s+/g, ' ').trim(), href: el.getAttribute('href'), w: r.width, h: r.height };
         }
+        // The header controls end at the right gutter and never run past it.
+        const row = document.querySelector('header.site-header .hdr');
+        const acts = document.querySelector('header.site-header .hdr-actions');
+        if (row && acts) out.align = { row: Math.round(row.getBoundingClientRect().right), acts: Math.round(acts.getBoundingClientRect().right) };
         return out;
       }, vp.width >= 1024);
-      for (const k of ['phone', 'estimate']) {
+      if (hdr.align && Math.abs(hdr.align.acts - hdr.align.row) > 2) f('header', `controls end at x=${hdr.align.acts}, the header row at x=${hdr.align.row}`);
+      // The thank-you page offers the phone number instead of another estimate.
+      if (p.kind === 'thankyou') {
+        if (hdr.estimate.ok) f('header', 'the thank-you page shows an estimate button');
+        if (hdr.phone.ok && !/756.8915/.test(hdr.phone.visibleText)) f('header', `the thank-you header must show the number, shows "${hdr.phone.visibleText}"`);
+      }
+      for (const k of p.kind === 'thankyou' ? ['phone'] : ['phone', 'estimate']) {
         const h = hdr[k];
         if (!h.ok) f('header', `${k} link not visible (${h.why || 'hidden or off screen'})`);
         else if (h.covered) f('header', `${k} link is covered by ${h.coveredBy}`);
@@ -390,7 +428,7 @@ async function main() {
           const form = document.querySelector('form[data-quote][data-placement="hero"]') || document.querySelector('form[data-quote]');
           if (!h1 || !form) return { missing: !h1 ? 'h1' : 'form' };
           const step = form.querySelector('[data-step="1"]');
-          const ctl = step && [...step.querySelectorAll('input:not([type=hidden]):not([name=botcheck]), select, textarea, button, label')].find((e) => __qa.shown(e));
+          const ctl = step && [...step.querySelectorAll('.chip, select, textarea, button')].find((e) => __qa.shown(e));
           const hr = h1.getBoundingClientRect(), fr = form.getBoundingClientRect();
           const sr = step ? step.getBoundingClientRect() : null, cr = ctl ? ctl.getBoundingClientRect() : null;
           const citySel = form.querySelector('[name="city"]');
@@ -408,7 +446,8 @@ async function main() {
             if (!beside) f('landing', 'form is not beside the H1 at desktop width');
           } else {
             if (!pos.after || pos.form.top < pos.h1.bottom - 1) f('landing', 'form does not follow the H1 on phones');
-            if (pos.form.top > pos.vh) w('landing', `form starts below the first screen (top ${Math.round(pos.form.top)} of ${pos.vh})`);
+            // The card's first choices belong on the first phone screen (390x844); smaller screens only warn.
+            if (!pos.ctl || pos.ctl.bottom > pos.vh) (vp.width >= 390 ? f : w)('landing', `the form's first choice ends below the first screen (${Math.round(pos.ctl?.bottom)} > ${pos.vh})`);
           }
         }
       }
@@ -442,20 +481,23 @@ async function main() {
         }
         const broken = [...document.images].filter((i) => i.getClientRects().length && i.currentSrc !== '' && i.complete && i.naturalWidth === 0).map((i) => i.currentSrc || i.src);
         const unrevealed = [...document.querySelectorAll('[data-reveal]')].filter((e) => getComputedStyle(e).display !== 'none' && __qa.eff(e) < 0.99).map((e) => `${__qa.sel(e)} opacity ${__qa.eff(e).toFixed(2)}`);
-        return { overflow: sw > vw + 1, sw, vw, offenders, min, minAt, small: small.slice(0, 8), smallCount: small.length, broken, unrevealed };
+        const clipped = __qa.clipped();
+        return { overflow: sw > vw + 1, sw, vw, offenders, min, minAt, small: small.slice(0, 8), smallCount: small.length, broken, unrevealed, clipped };
       });
       result.minFontPx = Number.isFinite(layout.min) ? +layout.min.toFixed(2) : null;
       if (layout.overflow) f('overflow', `horizontal overflow ${layout.sw}px > ${layout.vw}px: ${layout.offenders.join('; ')}`);
       if (layout.smallCount) f('text size', `${layout.smallCount} text node(s) under 12.5px, e.g. ${layout.small.join(' | ')}`);
       if (layout.broken.length) f('images', `broken: ${layout.broken.slice(0, 4).join(', ')}`);
       if (layout.unrevealed.length) f('reveal', `${layout.unrevealed.length} [data-reveal] still hidden after scrolling the whole page: ${layout.unrevealed.slice(0, 4).join(' | ')}`);
+      if (layout.clipped.length) f('clipping', `${layout.clipped.length} text element(s) cut off by their container or the screen edge: ${layout.clipped.slice(0, 5).join(' | ')}`);
 
       // Mobile bar behaviour
       const barCheck = await page.evaluate(async (phone) => {
         const wait = (ms) => new Promise((r) => setTimeout(r, ms));
         const bar = document.querySelector('.mobile-bar');
         if (!bar) return { missing: true };
-        const out = { atTop: __qa.present(bar), overForm: [], gap: null, desktopMid: null };
+        const call = bar.querySelector('a[data-contact="phone"]');
+        const out = { atTop: __qa.present(bar), overForm: [], gap: null, desktopMid: null, number: call ? /756.8915/.test(call.textContent) : false };
         const forms = [...document.querySelectorAll('form[data-quote]')];
         if (!phone) {
           window.scrollTo({ top: Math.round(document.documentElement.scrollHeight / 2), behavior: 'instant' });
@@ -493,6 +535,7 @@ async function main() {
         if (barCheck.atTop || barCheck.desktopMid) f('mobile bar', 'shown at desktop width');
       } else {
         for (const o of barCheck.overForm) if (o.visible) f('mobile bar', `visible while form[data-placement="${o.placement}"] is on screen (class "${o.cls}")`);
+        if (!barCheck.number) f('mobile bar', 'the call button does not show the phone number');
         if (barCheck.gap && !barCheck.gap.visible) f('mobile bar', `hidden with no form on screen at y=${barCheck.gap.y} (class "${barCheck.gap.cls}")`);
         result.mobileBar = barCheck;
       }
@@ -525,6 +568,145 @@ async function main() {
   const queue = [...tasks];
   await Promise.all(Array.from({ length: CONC }, async () => { while (queue.length) await runTask(queue.shift()); }));
   process.stdout.write('\n');
+
+  // ----- Tablet widths (iPad portrait and landscape): the widths where layouts switch -----------
+  const TABLETS = [{ width: 768, height: 1024 }, { width: 834, height: 1112 }, { width: 1024, height: 768 }];
+  const tabletPages = [pages.find((p) => p.kind === 'home'), pages.find((p) => p.kind === 'local'), pages.find((p) => p.kind === 'service'), pages.find((p) => p.route === '/faq/'), pages.find((p) => p.kind === 'hub')].filter(Boolean);
+  const tabletResults = [];
+  for (const vp of TABLETS) {
+    for (const p of tabletPages) {
+      const where = `${p.route} @${vp.width}x${vp.height}`;
+      const ctx = await makeContext({ viewport: vp, reducedMotion: 'reduce' });
+      const page = await ctx.newPage();
+      const log = watch(page);
+      try {
+        await page.goto(LOCAL + p.route, { waitUntil: 'load' });
+        await settle(page, 400);
+        await scrollThrough(page);
+        const r = await page.evaluate(() => {
+          const de = document.documentElement;
+          const row = document.querySelector('header.site-header .hdr').getBoundingClientRect();
+          const acts = document.querySelector('header.site-header .hdr-actions').getBoundingClientRect();
+          return { overflow: Math.max(de.scrollWidth, document.body.scrollWidth) > de.clientWidth + 1, clipped: __qa.clipped(), row: Math.round(row.right), acts: Math.round(acts.right) };
+        });
+        if (r.overflow) fail('tablet', `${where}: horizontal overflow`);
+        if (r.clipped.length) fail('tablet', `${where}: ${r.clipped.length} text element(s) cut off: ${r.clipped.slice(0, 4).join(' | ')}`);
+        if (Math.abs(r.acts - r.row) > 2) fail('tablet', `${where}: header controls end at x=${r.acts}, the header row at x=${r.row}`);
+        tabletResults.push({ route: p.route, width: vp.width, height: vp.height, clipped: r.clipped.length });
+        await page.screenshot({ path: path.join(SHOTS, `${slugOf(p.route)}-${vp.width}x${vp.height}.jpg`), type: 'jpeg', quality: 60 });
+      } catch (e) { fail('tablet', `${where}: exception ${e.message.split('\n')[0]}`); }
+      finally { log.closed = true; for (const e of log.errors) fail('console', `${where} ${e}`); await ctx.close().catch(() => {}); }
+    }
+  }
+
+  // ----- Phone menu: fills the screen below the header, the page behind it stays put, Escape closes it
+  const menuResult = {};
+  const homePage = pages.find((p) => p.kind === 'home');
+  if (homePage) {
+    const where = `${homePage.route} @390 menu`;
+    const ctx = await makeContext({ viewport: VIEWPORTS[1], reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(LOCAL + homePage.route, { waitUntil: 'load' });
+      await page.locator('[data-menu]').click();
+      await settle(page, 300);
+      const y0 = await page.evaluate(() => scrollY);
+      await page.mouse.move(195, 700);
+      await page.mouse.wheel(0, 600);
+      await settle(page, 400);
+      const m = await page.evaluate((y) => {
+        const panel = document.querySelector('[data-mnav]');
+        const r = panel.getBoundingClientRect();
+        return { open: !panel.hidden, bottom: Math.round(r.bottom), vh: innerHeight, moved: scrollY !== y, subs: panel.querySelectorAll('.mnav-sub a').length };
+      }, y0);
+      Object.assign(menuResult, m);
+      if (!m.open) fail('menu', `${where}: the menu did not open`);
+      if (m.bottom < m.vh - 2) fail('menu', `${where}: the open menu stops at y=${m.bottom} of ${m.vh}, the page shows underneath`);
+      if (m.moved) fail('menu', `${where}: the page scrolls behind the open menu`);
+      if (m.subs < 4) fail('menu', `${where}: the commercial property types are not listed under Commercial`);
+      await page.keyboard.press('Escape');
+      await settle(page, 200);
+      const closed = await page.evaluate(() => document.querySelector('[data-mnav]').hidden && !document.documentElement.classList.contains('menu-lock') && document.activeElement === document.querySelector('[data-menu]'));
+      if (!closed) fail('menu', `${where}: Escape does not close the menu, unlock the page and return focus to the button`);
+    } catch (e) { fail('menu', `${where}: exception ${e.message.split('\n')[0]}`); }
+    finally { await ctx.close().catch(() => {}); }
+  }
+
+  // ----- Form details: presets from the URL, Enter before the last step, inline errors, one step event per step
+  const formExtras = {};
+  const commercialLocal = pages.find((p) => p.kind === 'local' && p.service === 'commercial-holiday-lighting');
+  if (commercialLocal) {
+    const where = `${commercialLocal.route}?property=hoa&lights=poles @1440`;
+    const ctx = await makeContext({ viewport: VIEWPORTS[0], reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(LOCAL + commercialLocal.route + '?property=hoa&lights=poles', { waitUntil: 'load' });
+      await settle(page, 300);
+      const r = await page.evaluate(() => {
+        const f = document.querySelector('#estimate form[data-quote]');
+        return {
+          tag: (f.querySelector('[data-context-text]') || {}).textContent || '',
+          poles: !!f.querySelector('input[name="what_to_light"][value="Poles and lampposts"]:checked'),
+          pill: (document.querySelector('[data-plan-pill][aria-pressed="true"]') || {}).textContent || '',
+        };
+      });
+      formExtras.urlPreset = r;
+      if (!/^HOA or entrance in /.test(r.tag)) fail('forms', `${where}: the card tag reads "${r.tag}", expected "HOA or entrance in ..."`);
+      if (!r.poles) fail('forms', `${where}: ?lights=poles did not check "Poles and lampposts"`);
+      if (r.pill && !/HOA/.test(r.pill)) fail('forms', `${where}: the "Planning for" pill shows "${r.pill}"`);
+    } catch (e) { fail('forms', `${where}: exception ${e.message.split('\n')[0]}`); }
+    finally { await ctx.close().catch(() => {}); }
+  }
+  if (homePage) {
+    const where = `${homePage.route} @1440 form details`;
+    const ctx = await makeContext({ viewport: VIEWPORTS[0], reducedMotion: 'reduce' });
+    const flowEvents = [];
+    await ctx.exposeBinding('__qaEvent2', (_src, ev) => { flowEvents.push(ev); });
+    await ctx.addInitScript(() => {
+      const dl = (window.dataLayer = window.dataLayer || []);
+      const orig = dl.push.bind(dl);
+      dl.push = function (...args) { for (const a of args) { try { if (a && a.event) window.__qaEvent2(JSON.parse(JSON.stringify(a))); } catch { /* ignore */ } } return orig(...args); };
+    });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(LOCAL + homePage.route, { waitUntil: 'load' });
+      const form = page.locator('#estimate form[data-quote]');
+      await form.scrollIntoViewIfNeeded();
+      await form.locator('[data-next]').click();
+      await form.locator('[data-back]').click();
+      await form.locator('[data-next]').click();
+      await settle(page, 200);
+      const steps2 = flowEvents.filter((e) => e.event === 'estimate_step' && e.step === 2).length;
+      if (steps2 !== 1) fail('dataLayer', `${where}: Next, Back, Next pushed estimate_step 2 ${steps2} times (expected once)`);
+      const address = form.locator('input[name="address"]');
+      if (await address.count()) {
+        await address.fill('123 Main St');
+        await address.press('Enter');
+        await settle(page, 250);
+        const st = await page.evaluate(() => { const f = document.querySelector('#estimate form[data-quote]'); return { step: f.querySelector('[data-step-active]').getAttribute('data-step'), invalid: f.querySelectorAll('[aria-invalid="true"]').length, status: f.querySelector('[role="status"]').textContent.trim() }; });
+        formExtras.enter = st;
+        if (st.step !== '3') fail('forms', `${where}: Enter in the step 2 address field went to step ${st.step}, expected step 3`);
+        if (st.invalid || st.status) fail('forms', `${where}: Enter before the last step showed errors (${st.invalid} invalid, status "${st.status}")`);
+      }
+      await form.locator('input[name="phone"]').fill('555');
+      await form.locator('button[type="submit"]').click();
+      await settle(page, 250);
+      const errs = await page.evaluate(() => {
+        const f = document.querySelector('#estimate form[data-quote]');
+        const phone = f.querySelector('input[name="phone"]');
+        const d = phone.getAttribute('aria-describedby');
+        const el = d && document.getElementById(d);
+        return { shown: [...f.querySelectorAll('[data-err]')].filter((e) => !e.hidden).map((e) => e.textContent), phoneMsg: el ? el.textContent : '' };
+      });
+      formExtras.inlineErrors = errs;
+      if (errs.shown.length < 2) fail('forms', `${where}: an empty name and a short phone show ${errs.shown.length} inline message(s)`);
+      if (!/area code/i.test(errs.phoneMsg)) fail('forms', `${where}: a short phone number is not explained under the field ("${errs.phoneMsg}")`);
+      await page.locator('header a[data-cta="estimate"]').first().click();
+      await settle(page, 150);
+      if (!flowEvents.some((e) => e.event === 'estimate_cta_click' && e.placement === 'header')) fail('dataLayer', `${where}: the header estimate button pushed no estimate_cta_click`);
+    } catch (e) { fail('forms', `${where}: exception ${e.message.split('\n')[0]}`); }
+    finally { await ctx.close().catch(() => {}); }
+  }
 
   // ----- Reduced motion: fully lit immediately, videos never start -----------------------
   const rmPages = [pages.find((p) => p.kind === 'home'), ...pages.filter((p) => p.kind === 'local').slice(0, 2), pages.find((p) => p.kind === 'service')].filter(Boolean);
@@ -618,7 +800,8 @@ async function main() {
         if (r.hiddenReveals.length) fail('no-JS', `${where}: ${r.hiddenReveals.length} [data-reveal] hidden: ${r.hiddenReveals.slice(0, 5).join(' | ')}`);
         if (r.unreadable.length) fail('no-JS', `${where}: ${r.unreadable.length} text element(s) unreadable: ${r.unreadable.slice(0, 5).join(' | ')}`);
         if (!r.h1) fail('no-JS', `${where}: H1 not visible`);
-        if (!r.phone || !r.estimate) fail('no-JS', `${where}: header phone or estimate not visible`);
+        // The thank-you page offers the phone only; every other page has the phone and the estimate button.
+        if (!r.phone || (!r.estimate && p.kind !== 'thankyou')) fail('no-JS', `${where}: header phone or estimate not visible`);
         for (const fm of r.forms) {
           if (fm.shownSteps < fm.steps || !fm.submit) (r.direct ? fail : warn)('no-JS', `${where}: form[data-placement="${fm.placement}"] shows ${fm.shownSteps}/${fm.steps} steps${fm.submit ? '' : ' and no submit button'} without JavaScript${r.direct ? ' (direct mode must work without JS)' : ''}`);
         }
@@ -980,6 +1163,7 @@ async function main() {
     config: { base: cfg.base, origin: cfg.origin, local: LOCAL, formMode: directMode ? 'direct' : 'preview', durationMs: Date.now() - started },
     pages: pages.map((p) => p.route), skipped: missing,
     pageChecks: pageResults.sort((a, b) => a.route.localeCompare(b.route) || b.width - a.width),
+    tablets: tabletResults, menu: menuResult, formDetails: formExtras,
     reducedMotion: reducedResults, noJavaScript: noJsResults, video: videoResult, forms: formResults,
     dataLayerEvents: events,
     network: { web3formsIntercepted: external.web3forms.length, web3formsReachedNetwork: realOutbound, gtmStubbed: external.gtm, attributionIntercepted: external.attribution.length, blockedThirdParty: blocked },
@@ -990,7 +1174,7 @@ async function main() {
   // Summary
   const line = '-'.repeat(72);
   console.log(line);
-  console.log(`Pages ${pages.length} x ${VIEWPORTS.length} widths, ${pageResults.length} page checks, ${reducedResults.length} reduced-motion, ${noJsResults.length} no-JS, ${formResults.length} form flows. Form mode: ${directMode ? 'direct' : 'preview'}.`);
+  console.log(`Pages ${pages.length} x ${VIEWPORTS.length} widths, ${pageResults.length} page checks, ${tabletResults.length} tablet checks, ${reducedResults.length} reduced-motion, ${noJsResults.length} no-JS, ${formResults.length} form flows. Form mode: ${directMode ? 'direct' : 'preview'}.`);
   console.log(`Network: ${external.web3forms.length} Web3Forms request(s) intercepted, none sent. ${external.attribution.length} attribution post(s) intercepted. ${blocked.length} unexpected third-party request(s).`);
   const minFont = pageResults.filter((r) => r.minFontPx).map((r) => r.minFontPx);
   if (minFont.length) console.log(`Smallest visible text: ${Math.min(...minFont)}px`);

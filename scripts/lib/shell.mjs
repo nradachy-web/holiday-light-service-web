@@ -22,6 +22,9 @@ export function businessNode(ctx) {
     image: ctx.abs(ctx.og.default),
     logo: ctx.abs('/assets/icons/icon-512.png'),
     sameAs: [B.facebook],
+    // A service-area business: region and country only. No street address or city is verified yet
+    // (README launch checklist: add addressLocality once Aaron confirms the Business Profile city).
+    address: { '@type': 'PostalAddress', addressRegion: 'MI', addressCountry: 'US' },
     areaServed: ctx.content.counties.map((g) => ({ '@type': 'AdministrativeArea', name: `${g.county}, Michigan` })),
   };
 }
@@ -34,6 +37,8 @@ export function renderPage(ctx, page) {
   const noindex = !cfg.indexable || page.noindex;
   const robots = noindex ? 'noindex,follow' : 'index,follow';
   const og = ctx.abs(page.ogImage || ctx.og.default);
+  // The alt text always describes the image actually shared.
+  const ogAlt = page.ogAlt || (page.ogImage === ctx.og.commercial ? ctx.og.commercialAlt : ctx.og.alt);
 
   const graph = [businessNode(ctx), ...(page.schemas || [])];
   if (page.path === '/') graph.push({ '@type': 'WebSite', '@id': ctx.abs('/') + '#website', name: B.name, url: ctx.abs('/'), publisher: { '@id': ctx.abs('/') + '#business' } });
@@ -75,7 +80,7 @@ export function renderPage(ctx, page) {
 <link rel="canonical" href="${esc(canonical)}">
 <meta name="theme-color" content="#05070d">
 <meta name="color-scheme" content="dark">
-<meta property="og:type" content="website">
+<meta property="og:type" content="${page.ogType || 'website'}">
 <meta property="og:site_name" content="${B.name}">
 <meta property="og:title" content="${esc(page.title)}">
 <meta property="og:description" content="${esc(page.description)}">
@@ -83,7 +88,7 @@ export function renderPage(ctx, page) {
 <meta property="og:image" content="${esc(og)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(page.ogAlt || ctx.og.alt)}">
+<meta property="og:image:alt" content="${esc(ogAlt)}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${ctx.url('/favicon.ico')}" sizes="32x32">
 <link rel="icon" href="${ctx.url('/favicon.svg')}" type="image/svg+xml">

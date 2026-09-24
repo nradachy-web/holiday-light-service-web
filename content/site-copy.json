@@ -1,13 +1,13 @@
 {
   "home": {
-    "title": "Holiday Light Service | Christmas Light Installation, MI",
+    "title": "Holiday Light Service | Southeast Michigan Holiday Lighting",
     "meta_description": "Christmas light installation and holiday lighting for Southeast Michigan homes, businesses and downtowns since 2003. Design, install, takedown.",
     "eyebrow": "Southeast Michigan since 2003",
     "h1": "Christmas light installation and holiday lighting in Southeast Michigan",
     "hero_sub": "Homes, businesses, HOA entrances and downtowns. We design the display, install it with bucket-truck crews, service it through the season and take it down after the holidays.",
     "intro": "Holiday Light Service has been putting up lights across Southeast Michigan since 2003. You tell us what you picture. We plan the layout, measure every run, hang each strand in clean, even lines and come back for it after the holidays. No ladder for you. No tangled strands. No weekend lost on a cold roof.",
     "services_heading": "What we light",
-    "services_intro": "Rooflines and trees at home, full-season displays for businesses and downtowns, and permanent and landscape lighting that keeps working after the holidays end.",
+    "services_intro": "Rooflines and trees at home, and full-season displays for HOA entrances, businesses and downtowns. Every photo is our own work.",
     "season_heading": "How a season runs",
     "season": [
       {
@@ -56,7 +56,13 @@
     ],
     "commercial_band": {
       "heading": "Storefronts, downtowns and entrances",
-      "text": "Every December, downtowns and shopping centers compete for attention. We plan building outlines, tree wraps, canopy lighting, pole and lamppost decor and entrance displays, then install, service and remove them around your hours and your foot traffic."
+      "text": "Every December, downtowns and shopping centers compete for attention. We plan building outlines, tree wraps, canopy lighting, pole and lamppost decor and entrance displays, then install, service and remove them around your hours and your foot traffic.",
+      "cards": {
+        "downtowns-and-municipalities": "Main streets, plazas and civic buildings, planned block by block.",
+        "hoa-and-subdivision-entrances": "Entrance signs and islands, with a written plan the board can approve.",
+        "retail-and-shopping-centers": "Outlines, pole decor and parking lot trees that read from the road.",
+        "offices-and-business-campuses": "Entrances, trees and rooflines, with one contact for facilities teams."
+      }
     },
     "permanent_band": {
       "heading": "Lights that stay up all year",
@@ -67,14 +73,20 @@
     "closing": {
       "heading": "Get on the schedule while dates are open",
       "text": "Tell us about your home or property. We will talk through the design, answer your questions and send your free estimate in writing."
+    },
+    "paths": {
+      "home": "Full-service holiday lighting for your home: design, installation, in-season service and takedown.",
+      "hoa": "Entrance signs, trees and landscape islands for HOAs, condominiums and subdivisions, with a plan the board can approve.",
+      "downtown": "Street tree wraps, lamppost decor and centerpiece trees for downtowns and municipal properties, planned block by block.",
+      "business": "Storefronts, offices and shopping centers, from the first walkthrough to removal after the season."
     }
   },
   "services": [
     {
       "slug": "christmas-light-installation",
-      "name": "Christmas Light Installation",
+      "name": "Christmas light installation",
       "short": "Christmas lights",
-      "title": "Christmas Light Installation | Holiday Light Service",
+      "title": "Christmas Light Installation in Southeast Michigan",
       "meta_description": "Professional Christmas light installation for Southeast Michigan homes. We design, install, service and take down your display. Get a free estimate.",
       "h1": "Christmas Light Installation in Southeast Michigan",
       "hero_sub": "Your home, lit in clean lines, with no ladder for you. We design it, hang it, service it through the season and take it down after the holidays.",
@@ -130,9 +142,9 @@
     },
     {
       "slug": "roofline-christmas-lights",
-      "name": "Roofline Christmas Lights",
+      "name": "Roofline Christmas lights",
       "short": "Rooflines",
-      "title": "Roofline Christmas Lights | Holiday Light Service",
+      "title": "Roofline Christmas Lights in Southeast Michigan",
       "meta_description": "Roofline Christmas lights installed in straight, even lines on gutters, peaks and gables. Serving Southeast Michigan since 2003. Get a free estimate.",
       "h1": "Roofline Christmas Light Installation in Southeast Michigan",
       "hero_sub": "Straight, even lines along gutters, peaks and gables. It is the first thing people see from the street, so it gets the most care.",
@@ -187,9 +199,9 @@
     },
     {
       "slug": "tree-and-shrub-lighting",
-      "name": "Tree and Shrub Lighting",
+      "name": "Tree and shrub lighting",
       "short": "Trees and shrubs",
-      "title": "Tree and Shrub Christmas Lighting | Holiday Light Service",
+      "title": "Tree and Shrub Lighting in Southeast Michigan",
       "meta_description": "Tree wraps, canopy lighting and shrub lighting for Southeast Michigan homes and properties. Trunks, limbs and evergreens lit with care. Free estimates.",
       "h1": "Tree and Shrub Lighting in Southeast Michigan",
       "hero_sub": "Wrapped trunks, lit canopies and glowing evergreens. The trees are often the part of the display people remember.",
@@ -244,10 +256,10 @@
     },
     {
       "slug": "commercial-holiday-lighting",
-      "name": "Commercial Holiday Lighting",
+      "name": "Commercial holiday lighting",
       "short": "Commercial",
-      "title": "Commercial Holiday Lighting | Holiday Light Service",
-      "meta_description": "Commercial holiday lighting for downtowns, shopping centers, HOAs and businesses in Southeast Michigan. Design, install, service, removal.",
+      "title": "Commercial Holiday Lighting in Southeast Michigan",
+      "meta_description": "Commercial Christmas lights and holiday lighting for Southeast Michigan downtowns, shopping centers, HOAs and businesses, from design to removal.",
       "h1": "Commercial Holiday Lighting in Southeast Michigan",
       "hero_sub": "Building outlines, tree wraps, canopy lighting and entrance displays for properties that need to be noticed in December.",
       "summary": "Full-season lighting for businesses, shopping centers, HOAs and downtowns, from walkthrough to removal.",
@@ -302,12 +314,12 @@
     },
     {
       "slug": "permanent-lighting",
-      "name": "Permanent Lighting",
+      "name": "Permanent lighting",
       "short": "Permanent",
-      "title": "Permanent Roofline Lighting | Holiday Light Service",
-      "meta_description": "Permanent roofline lighting in Southeast Michigan. A discreet track under the eaves with app-controlled colors and schedules, all year. Free estimates.",
+      "title": "Permanent Christmas Lights in Southeast Michigan",
+      "meta_description": "Permanent Christmas lights for Southeast Michigan homes: a discreet track under the eaves with app-controlled colors and schedules, all year.",
       "h1": "Permanent Roofline Lighting in Southeast Michigan",
-      "hero_sub": "Lights that live under your eaves all year. Pick the colors and the schedule from your phone, for Christmas, game days or every night.",
+      "hero_sub": "Permanent holiday lights that live under your eaves all year. Pick the colors and the schedule from your phone, for Christmas, game days or every night.",
       "summary": "App-controlled lighting in a discreet track under the eaves, installed once and used all year.",
       "intro": "Permanent lighting mounts in a low-profile track under your eaves, where it stays discreet during the day. At night, you choose the colors, scenes and schedule from a smartphone app. Warm white for the holidays, team colors for game day, soft accent light on an ordinary Tuesday. There is no ladder season and no takedown. We design the layout around your roofline, install the track and lights, and show you how the app works.",
       "scope": [
@@ -342,7 +354,7 @@
           "From a smartphone app. You can change colors, choose scenes and schedule the lights to turn on and off for holidays, events or every evening."
         ],
         [
-          "Is permanent lighting only for Christmas?",
+          "Are permanent Christmas lights only for Christmas?",
           "No, and that is the point. Use it for Christmas, Halloween, the Fourth of July, game days, birthdays or simple warm white accent lighting all year."
         ],
         [
@@ -358,9 +370,9 @@
     },
     {
       "slug": "landscape-lighting",
-      "name": "Landscape Lighting",
+      "name": "Landscape lighting",
       "short": "Landscape",
-      "title": "Outdoor Landscape Lighting | Holiday Light Service",
+      "title": "Landscape Lighting in Southeast Michigan",
       "meta_description": "Landscape lighting for Southeast Michigan homes and properties. Accent the architecture, trees and paths after dark, all year long. Get a free estimate.",
       "h1": "Landscape Lighting in Southeast Michigan",
       "hero_sub": "Light the house, the trees and the path to the door, so your property looks as good at 9 p.m. as it does at noon.",
@@ -417,7 +429,7 @@
   "verticals": [
     {
       "slug": "downtowns-and-municipalities",
-      "name": "Downtowns and Municipalities",
+      "name": "Downtowns and municipalities",
       "title": "Downtown Holiday Lighting | Holiday Light Service",
       "meta_description": "Holiday lighting for Michigan downtowns, main streets and municipal properties. Tree wraps, lamppost decor and district plans, installed and removed.",
       "h1": "Downtown and Municipal Holiday Lighting in Southeast Michigan",
@@ -465,7 +477,7 @@
     },
     {
       "slug": "hoa-and-subdivision-entrances",
-      "name": "HOA and Subdivision Entrances",
+      "name": "HOA and subdivision entrances",
       "title": "HOA Entrance Holiday Lighting | Holiday Light Service",
       "meta_description": "Holiday lighting for HOA, condo and subdivision entrances in Southeast Michigan. Signs, trees and landscape islands lit for the season. Free estimates.",
       "h1": "HOA and Subdivision Entrance Lighting in Southeast Michigan",
@@ -513,7 +525,7 @@
     },
     {
       "slug": "retail-and-shopping-centers",
-      "name": "Retail and Shopping Centers",
+      "name": "Retail and shopping centers",
       "title": "Shopping Center Holiday Lighting | Holiday Light Service",
       "meta_description": "Holiday lighting for shopping centers, storefronts and retail properties in Southeast Michigan. Designed to draw shoppers in. Get a free estimate.",
       "h1": "Retail and Shopping Center Holiday Lighting in Southeast Michigan",
@@ -561,7 +573,7 @@
     },
     {
       "slug": "offices-and-business-campuses",
-      "name": "Offices and Business Campuses",
+      "name": "Offices and business campuses",
       "title": "Office and Campus Holiday Lighting | Holiday Light Service",
       "meta_description": "Holiday lighting for offices, business campuses and corporate properties in Southeast Michigan. Entrances, signs, trees and rooflines lit for the season.",
       "h1": "Office and Business Campus Holiday Lighting in Southeast Michigan",
@@ -614,7 +626,7 @@
     "intro": "For more than twenty years, Holiday Light Service has put up lights that make people slow down and look, on homes, storefronts, neighborhood entrances and downtown streets.",
     "story": [
       "Holiday Light Service has been lighting Southeast Michigan since 2003, and the idea behind it is simple. People love a lit house in December. Very few of them love climbing a ladder in the cold to make it happen. So we do it for them.",
-      "Over two decades, that work has covered rooflines and front-yard trees, shopping centers, HOA entrances and downtown streets wrapped block by block. Bucket trucks handle the high work. The approach is straightforward: plan it carefully, install it cleanly, service it through the season and take it down when the season is over.",
+      "Over two decades, that work has covered rooflines and front-yard trees, HOA entrances and downtown streets wrapped block by block, and shopping centers, offices and other businesses get the same careful planning. Bucket trucks handle the high work. The approach is straightforward: plan it carefully, install it cleanly, service it through the season and take it down when the season is over.",
       "We also install permanent roofline lighting and landscape lighting, for homeowners and businesses who want their property to look good well past the holidays.",
       "Holiday Light Service is now part of the Ace Outdoor Services family."
     ],
@@ -635,7 +647,12 @@
         "No rushing high work",
         "Bucket trucks handle the tall and steep work wherever the property allows. When ice or high wind moves in, high work waits for a better day."
       ]
-    ]
+    ],
+    "services_intro": "Rooflines and trees at home, full-season displays for businesses and downtowns, and permanent and landscape lighting that keeps working after the holidays end.",
+    "closing": {
+      "heading": "Start with a conversation",
+      "text": "Tell us about the property and the look you want. We will answer your questions and send your free estimate in writing."
+    }
   },
   "process": {
     "title": "How Our Holiday Lighting Works | Holiday Light Service",
@@ -663,7 +680,28 @@
         "In-season service and takedown",
         "If something goes dark, call us and we get it on the schedule. After the holidays, we take everything down and leave the property tidy."
       ]
-    ]
+    ],
+    "year_round": {
+      "intro": "Five steps, one company. Here is what happens after you ask for a free estimate.",
+      "permanent": [
+        "Setup and support",
+        "Before the crew leaves, we set up your scenes with you and walk you through the app. If a section needs attention later, call us and we get it on the schedule."
+      ],
+      "landscape": [
+        "Aiming and support",
+        "We aim and adjust the fixtures so the light lands where it should. If a fixture needs attention later, call us and we get it on the schedule."
+      ],
+      "installation": {
+        "landscape": [
+          "Installation",
+          "The crew sets each fixture where the approved layout places it, works carefully around your lawn, beds and walkways, and tests the lighting before leaving."
+        ]
+      }
+    },
+    "closing": {
+      "heading": "Start with step one",
+      "text": "Tell us what you picture. A rough idea is plenty, and your free estimate spells out the rest."
+    }
   },
   "faq": {
     "title": "Holiday Lighting FAQ | Holiday Light Service",
@@ -755,13 +793,25 @@
         "text": "Bucket trucks for the high limbs and peaks, careful hands for the details. This is how the lines stay straight.",
         "subject": "crew"
       }
-    ]
+    ],
+    "closing": {
+      "heading": "Picture your property lit",
+      "text": "From one roofline to a full downtown block, tell us what you want lit and we will send a free estimate that spells out what is included."
+    }
   },
   "service_area": {
     "title": "Southeast Michigan Service Area | Holiday Light Service",
     "meta_description": "Holiday Light Service installs Christmas and holiday lighting across Oakland, Genesee, Livingston, Wayne and Macomb county communities. Find yours.",
     "h1": "Holiday lighting service area in Southeast Michigan",
-    "intro": "Our crews work across Oakland, Genesee and Livingston counties and in nearby Wayne and Macomb communities, lighting homes, businesses, HOA entrances and downtowns. Choose your community for local details. Not on the list? Send your address and we will let you know."
+    "intro": "Our crews work across Oakland, Genesee and Livingston counties and in nearby Wayne and Macomb communities, lighting homes, businesses, HOA entrances and downtowns. Choose your community for local details. Not on the list? Send your address and we will let you know.",
+    "closing": {
+      "heading": "Not sure we reach you? Ask us",
+      "text": "Send your address and what you want lit. We will confirm the service area and follow up about your free estimate."
+    },
+    "hub_closing": {
+      "heading": "Get on the {city} schedule",
+      "text": "Tell us about your {city} home or property. We will talk through the design and send your free estimate in writing."
+    }
   },
   "contact": {
     "title": "Get a Free Estimate | Holiday Light Service",
@@ -836,7 +886,9 @@
           ]
         }
       ],
-      "related_service": "christmas-light-installation"
+      "related_service": "christmas-light-installation",
+      "published": "2026-09-24",
+      "updated": "2026-09-24"
     },
     {
       "slug": "permanent-vs-seasonal-holiday-lights",
@@ -891,7 +943,9 @@
           ]
         }
       ],
-      "related_service": "permanent-lighting"
+      "related_service": "permanent-lighting",
+      "published": "2026-09-24",
+      "updated": "2026-09-24"
     },
     {
       "slug": "planning-commercial-holiday-lighting",
@@ -947,7 +1001,9 @@
           ]
         }
       ],
-      "related_service": "commercial-holiday-lighting"
+      "related_service": "commercial-holiday-lighting",
+      "published": "2026-09-24",
+      "updated": "2026-09-24"
     },
     {
       "slug": "holiday-lights-without-the-ladder",
@@ -997,14 +1053,20 @@
           ]
         }
       ],
-      "related_service": "christmas-light-installation"
+      "related_service": "christmas-light-installation",
+      "published": "2026-09-24",
+      "updated": "2026-09-24"
     }
   ],
   "guides_hub": {
     "title": "Holiday Lighting Guides | Holiday Light Service",
     "meta_description": "Practical guides to holiday lighting in Michigan: when to book, permanent vs seasonal lights, commercial planning and hanging lights without the ladder.",
     "h1": "Holiday lighting guides",
-    "intro": "Plain answers for homeowners, HOA boards and property managers planning a display, from booking dates to choosing between permanent and seasonal lights."
+    "intro": "Plain answers for homeowners, HOA boards and property managers planning a display, from booking dates to choosing between permanent and seasonal lights.",
+    "closing": {
+      "heading": "Ready to plan your display?",
+      "text": "Send the details you have. We will fill in the rest when we talk and send your free estimate in writing."
+    }
   },
   "thank_you": {
     "title": "Request Received | Holiday Light Service",

@@ -16,6 +16,7 @@ const ICONS = {
   play: '<path d="M8 5.8v12.4a.6.6 0 0 0 .9.5l9.6-6.2a.6.6 0 0 0 0-1L8.9 5.3a.6.6 0 0 0-.9.5Z" fill="currentColor"/>',
   plus: '<path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
   back: '<path d="M19.5 12H5M10.5 6.5 5 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  home: '<path d="M4.5 11 12 4.8l7.5 6.2M6.8 9.4V19h10.4V9.4M10.2 19v-5h3.6v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
 };
 
 // C9 bulb, base at 0,0 pointing up. Glass is a faceted cone with a rounded tip.

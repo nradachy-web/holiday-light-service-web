@@ -87,16 +87,17 @@ export function lightString({ points, spacing = 20, width, height, kind = 'c9', 
 
 // Named shapes used across the site. Each service gets its own string so pages are not clones.
 export const STRINGS = {
-  // Home hero: long eave, a main gable over the headline, a dormer, then the house corner with a drop.
+  // Home hero: long eave, a main gable over the headline, a dormer, then the eave runs on toward the
+  // right edge and fades out behind the tree (a CSS mask fades both ends), so the headline hangs from
+  // an eave instead of a house outline floating over the lake.
   hero: () =>
     lightString({
-      points: [[0, 184], [250, 184], [440, 46], [630, 184], [744, 184], [820, 122], [896, 184], [960, 184]],
+      points: [[0, 184], [250, 184], [440, 46], [630, 184], [744, 184], [820, 122], [896, 184], [1600, 184]],
       spacing: 19,
-      width: 1100,
-      height: 216,
-      drop: 26,
+      width: 1600,
+      height: 190,
       t0: 90,
-      span: 1150,
+      span: 1300,
       cls: 'hero-string',
     }),
   // Residential landing: a straight eave with a small gable, ending at the corner.

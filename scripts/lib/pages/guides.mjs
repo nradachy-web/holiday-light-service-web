@@ -120,7 +120,7 @@ function guideBody(ctx, page, g, svc) {
   // the others show their photo beside the headline, at a size the source files support.
   const media = HEAD_SCENE.has(g.slug)
     ? `<div class="gd-media gd-media-scene">${sceneSwitcher(ctx, { cls: 'scene-guide' })}</div>`
-    : `<figure class="gd-media gd-fig">${ctx.media.photo(photo, { eager: true, sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption>${esc(m.caption)}</figcaption></figure>`;
+    : `<figure class="gd-media gd-fig fit1x" style="${ctx.media.fit(photo)}">${ctx.media.photo(photo, { eager: true, sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption>${esc(m.caption)}</figcaption></figure>`;
 
   return `<article class="gd" aria-labelledby="page-title">
   <div class="wrap gd-head">

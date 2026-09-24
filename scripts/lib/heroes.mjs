@@ -37,7 +37,7 @@ export function homeHero(ctx, page) {
  * bleed: { name, focal } for footage, or { photo, focal } for a still
  * plan: optional "Planning for" row (commercial pages)
  */
-export function splitHero(ctx, page, { crumbItems = [], eyebrow = '', h1, sub, deco = '', variant = 'frame', media = '', bleed = null, form, more = true, actions = true, mediaCls = '', spells, plan = '' }) {
+export function splitHero(ctx, page, { crumbItems = [], eyebrow = '', h1, sub, deco = '', variant = 'frame', media = '', bleed = null, form, more = true, actions = true, mediaCls = '', spells, proof, plan = '' }) {
   let bg = '';
   let foot = '';
   if (variant === 'bleed' && bleed?.photo) {
@@ -67,7 +67,7 @@ export function splitHero(ctx, page, { crumbItems = [], eyebrow = '', h1, sub, d
     ${act}
     ${media ? `<div class="sh-media${mediaCls ? ' ' + mediaCls : ''}">${media}</div>` : ''}
     <div class="sh-form">${form}</div>
-    ${more ? `<div class="sh-more" data-fade style="--d:480ms">${proofRow()}${spellsOut('', spells)}</div>` : ''}
+    ${more ? `<div class="sh-more" data-fade style="--d:480ms">${proofRow('', proof)}${spellsOut('', spells)}</div>` : ''}
     ${foot}
   </div>
 </section>`;
@@ -80,14 +80,14 @@ export function splitHero(ctx, page, { crumbItems = [], eyebrow = '', h1, sub, d
  * before the caption (for example "Seasonal work" on a page whose own work has no photos yet).
  */
 export function heroFrame(ctx, names, { focal, label = '', focals = [] } = {}) {
-  const { photo, caption } = ctx.media;
+  const { photo, caption, fit } = ctx.media;
   const tag = label ? `<span class="cap-tag">${esc(label)}</span> ` : '';
   if (names.length === 1) {
     const n = names[0];
     // Very wide photos keep their own proportions instead of a 2:1 crop that would be mostly sky.
     const m = ctx.content.mediaItem(n);
-    const wide = m.width / m.height > 2.1 ? ` style="--frame-ar:${m.width}/${m.height}"` : '';
-    return `<figure class="sh-frame${label ? ' is-labeled' : ''}"${wide}>${photo(n, { eager: true, sizes: '(min-width: 1000px) 720px, 100vw', focal })}<figcaption>${tag}${esc(caption(n))}</figcaption></figure>`;
+    const wide = m.width / m.height > 2.1 ? `;--frame-ar:${m.width}/${m.height}` : '';
+    return `<figure class="sh-frame fit1x${label ? ' is-labeled' : ''}" style="${fit(n)}${wide}">${photo(n, { eager: true, sizes: '(min-width: 1000px) 720px, 100vw', focal })}<figcaption>${tag}${esc(caption(n))}</figcaption></figure>`;
   }
   // Landscape photos take the wider slot and both share one height, so neither is stretched.
   const land = names.map((n) => { const m = ctx.content.mediaItem(n); return m.width > m.height; });
@@ -96,7 +96,7 @@ export function heroFrame(ctx, names, { focal, label = '', focals = [] } = {}) {
   const sizes = (i) => (land[i] && !land[1 - i] ? '(min-width: 1000px) 470px, 60vw' : !land[i] && land[1 - i] ? '(min-width: 1000px) 310px, 40vw' : '(min-width: 1000px) 390px, 50vw');
   // On phones the two captions collapse into one line under the pair.
   return `<div class="sh-pair${mixed ? ' sh-pair-wide' : ''}"${mixed ? ` style="--pair-cols:${cols}"` : ''}>${names
-    .map((n, i) => `<figure class="sh-frame">${photo(n, { eager: true, sizes: sizes(i), focal: focals[i] })}<figcaption>${esc(caption(n))}</figcaption></figure>`)
+    .map((n, i) => `<figure class="sh-frame fit1x" style="${fit(n)}">${photo(n, { eager: true, sizes: sizes(i), focal: focals[i] })}<figcaption>${esc(caption(n))}</figcaption></figure>`)
     .join('')}<p class="sh-pair-cap">${tag}${names.map((n) => esc(caption(n))).join(' ')}</p></div>`;
 }
 

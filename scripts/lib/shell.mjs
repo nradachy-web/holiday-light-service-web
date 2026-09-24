@@ -37,6 +37,7 @@ export function renderPage(ctx, page) {
   const noindex = !cfg.indexable || page.noindex;
   const robots = noindex ? 'noindex,follow' : 'index,follow';
   const og = ctx.abs(page.ogImage || ctx.og.default);
+  const ogSize = ctx.og.size(page.ogImage || ctx.og.default);
   // The alt text always describes the image actually shared.
   const ogAlt = page.ogAlt || (page.ogImage === ctx.og.commercial ? ctx.og.commercialAlt : ctx.og.alt);
 
@@ -86,8 +87,8 @@ export function renderPage(ctx, page) {
 <meta property="og:description" content="${esc(page.description)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:image" content="${esc(og)}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="${ogSize.width}">
+<meta property="og:image:height" content="${ogSize.height}">
 <meta property="og:image:alt" content="${esc(ogAlt)}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${ctx.url('/favicon.ico')}" sizes="32x32">

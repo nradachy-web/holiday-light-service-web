@@ -30,21 +30,22 @@ function homeBody(ctx, page, H) {
   const T = H.paths;
   const paths = [
     { key: 'home', title: 'Homes', text: T.home, photo: 'bucket-truck-roofline-install', property: 'Home', cta: 'Get a home estimate', link: ['See residential lighting', '/christmas-light-installation/'] },
-    { key: 'hoa', title: 'HOAs and entrances', text: T.hoa, photo: 'pavilion-roofline-lights', focal: '50% 55%', property: 'HOA or subdivision', cta: 'Get an entrance estimate', link: ['See HOA lighting', '/commercial/hoa-and-subdivision-entrances/'] },
+    // The pavilion is a panorama: it keeps its own proportions in the card frame (native), never a crop.
+    { key: 'hoa', title: 'HOAs and entrances', text: T.hoa, photo: 'pavilion-roofline-lights', native: true, property: 'HOA or subdivision', cta: 'Get an entrance estimate', link: ['See HOA lighting', '/commercial/hoa-and-subdivision-entrances/'] },
     { key: 'downtown', title: 'Downtowns and municipalities', text: T.downtown, photo: 'downtown-wrapped-trees-night', property: 'Downtown or municipality', lights: 'Trees and shrubs,Poles and lampposts', cta: 'Plan a downtown estimate', link: ['See downtown lighting', '/commercial/downtowns-and-municipalities/'] },
     { key: 'business', title: 'Businesses', text: T.business, photo: 'commercial-building-lit-trees', property: 'Business', cta: 'Book a walkthrough', link: ['See commercial lighting', '/commercial-holiday-lighting/'] },
   ];
   const pathCards = paths
     .map(
       (p, i) => `<li class="path" data-reveal style="--d:${i * 80}ms">
-      <figure class="path-media">${photo(p.photo, { sizes: '(min-width: 1241px) 300px, (min-width: 761px) 50vw, 100vw', focal: p.focal })}<figcaption>${esc(caption(p.photo))}</figcaption></figure>
+      <figure class="path-media${p.native ? ' path-native' : ''} fit1x" style="${ctx.media.fit(p.photo)}">${photo(p.photo, { sizes: '(min-width: 1241px) 300px, (min-width: 761px) 50vw, 100vw', focal: p.focal })}<figcaption>${esc(caption(p.photo))}</figcaption></figure>
       <div class="path-body">
         <h3>${esc(p.title)}</h3>
         <p>${esc(p.text)}</p>
-        <div class="path-actions">
-          <a class="btn btn-glow btn-sm" href="#estimate" data-cta="estimate" data-placement="path_${p.key}" data-preset-property="${esc(p.property)}"${p.lights ? ` data-preset-light="${esc(p.lights)}"` : ''}><span>${esc(p.cta)}</span>${icon('arrow')}</a>
-          <a class="tlink tlink-sm" href="${ctx.url(p.link[1])}">${esc(p.link[0])}${icon('arrow')}</a>
-        </div>
+      </div>
+      <div class="path-actions">
+        <a class="btn btn-glow btn-sm" href="#estimate" data-cta="estimate" data-placement="path_${p.key}" data-preset-property="${esc(p.property)}"${p.lights ? ` data-preset-light="${esc(p.lights)}"` : ''}><span>${esc(p.cta)}</span>${icon('arrow')}</a>
+        <a class="tlink tlink-sm" href="${ctx.url(p.link[1])}">${esc(p.link[0])}${icon('arrow')}</a>
       </div>
     </li>`
     )

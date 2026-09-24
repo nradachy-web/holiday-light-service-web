@@ -4,7 +4,7 @@ import { esc } from '../html.mjs';
 import { icon } from '../icons.mjs';
 import { STRINGS } from '../roofline.mjs';
 import { splitHero, heroFrame } from '../heroes.mjs';
-import { considerationCards, processRow, faqList, faqSchema, ticks, countyPills, sceneSwitcher, planRow, SPELLS, SPELLS_PERMANENT, SPELLS_LANDSCAPE } from '../blocks.mjs';
+import { considerationCards, processRow, faqList, faqSchema, ticks, countyPills, sceneSwitcher, planRow, SPELLS, SPELLS_PERMANENT, SPELLS_LANDSCAPE, PROOF_LANDSCAPE } from '../blocks.mjs';
 import { quoteForm } from '../form.mjs';
 import { closing, composition } from '../sections.mjs';
 import { LOCAL_SERVICES } from '../config.mjs';
@@ -71,8 +71,12 @@ function serviceBody(ctx, page, s, setup) {
     form,
     plan: setup.plan ? planRow(ctx, { current: setup.property }) : '',
     spells: s.slug === 'permanent-lighting' ? SPELLS_PERMANENT : s.slug === 'landscape-lighting' ? SPELLS_LANDSCAPE : SPELLS,
+    proof: s.slug === 'landscape-lighting' ? PROOF_LANDSCAPE : undefined,
   });
   const audience = audienceFor(s.slug);
+  // Landscape lighting is not holiday work: its shared parts (the questions link, the closing's next
+  // steps) use their landscape wording from site-copy.
+  const landscape = s.slug === 'landscape-lighting';
 
   const hasLocal = LOCAL_SERVICES.includes(s.slug);
   const localBlock = hasLocal
@@ -157,7 +161,7 @@ ${verticals}
   <div class="wrap faq-wrap">
     <div class="faq-side" data-reveal>
       <h2 id="faq-title">Questions</h2>
-      <a class="tlink" href="${ctx.url('/faq/')}">All holiday lighting questions${icon('arrow')}</a>
+      <a class="tlink" href="${ctx.url('/faq/')}">${landscape ? 'All lighting questions' : 'All holiday lighting questions'}${icon('arrow')}</a>
       ${relatedGuide(ctx, s.slug)}
     </div>
     <div data-reveal>${faqList(s.faqs)}</div>
@@ -166,7 +170,7 @@ ${verticals}
 
 ${localBlock}
 
-${closing(ctx, page, { heading: s.cta_line, text: '', ...closingMedia(s.slug, setup), anchor: 'estimate-close', formOpts: { lights: setup.lights, property: setup.property } })}`;
+${closing(ctx, page, { heading: s.cta_line, text: '', ...closingMedia(s.slug, setup), anchor: 'estimate-close', steps: landscape ? copy.contact.next_steps_landscape : undefined, formOpts: { lights: setup.lights, property: setup.property } })}`;
 }
 
 // Permanent and landscape pages have no photos of their own work yet: their closing shows our warm

@@ -34,8 +34,12 @@ export function spellsOut(cls = '', items = SPELLS) {
   return `<div class="spells${cls ? ' ' + cls : ''}"><p class="spells-h">Every estimate spells out</p><ul>${items.map((x) => `<li>${icon('check')}<span>${x}</span></li>`).join('')}</ul></div>`;
 }
 
-export function proofRow(cls = '') {
-  return `<ul class="proof${cls ? ' ' + cls : ''}"><li>Lighting Southeast Michigan since 2003</li><li>Bucket-truck crews for the high work</li></ul>`;
+// Proof row on the first screen. Landscape lighting is ground-level work, so its row trades the
+// bucket trucks for the free estimate (both verified facts, DESIGN.md).
+export const PROOF = ['Lighting Southeast Michigan since 2003', 'Bucket-truck crews for the high work'];
+export const PROOF_LANDSCAPE = ['Lighting Southeast Michigan since 2003', 'Free estimates for homes and businesses'];
+export function proofRow(cls = '', items = PROOF) {
+  return `<ul class="proof${cls ? ' ' + cls : ''}">${items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
 }
 
 export function ticks(list, cls = '') {

@@ -24,9 +24,9 @@ export const VERTICAL_SETUP = {
   'hoa-and-subdivision-entrances': {
     property: 'HOA or subdivision',
     lights: ['Entrance or sign'],
-    // A common-area roofline (cropped to its gable) beside warm evergreens; the green entrance sits
-    // lower, paired with a lit home, so no slot near the top is all color.
-    hero: ['pavilion-roofline-lights', 'evergreens-warm-white'],
+    // A common-area roofline, the whole pavilion at its own proportions (a panorama is never cropped);
+    // the green entrance sits lower, paired with a lit home, so no slot near the top is all color.
+    hero: ['pavilion-roofline-lights'],
     deco: 'eave',
     comp: ['subdivision-entrance-green-trees', 'roofline-large-home'],
     close: 'town-blue-hour-aerial',

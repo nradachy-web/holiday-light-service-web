@@ -139,7 +139,7 @@ export function guideCard(ctx, g, { feature = false, headingTag = 'h3', eager = 
   const sizes = feature ? '(min-width: 1000px) 720px, 100vw' : '(min-width: 1000px) 420px, 100vw';
   const href = ctx.url(`/guides/${g.slug}/`);
   return `<article class="gcard${feature ? ' gcard-feature' : ''}" data-reveal>
-    <div class="gcard-media">${ctx.media.photo(name, { sizes, alt: '', eager })}</div>
+    <div class="gcard-media fit1x" style="${ctx.media.fit(name)}">${ctx.media.photo(name, { sizes, alt: '', eager })}</div>
     <div class="gcard-body">
       <p class="gcard-k">Guide <span aria-hidden="true">·</span> ${readingTime(g)}</p>
       <${headingTag} class="gcard-t"><a href="${href}">${esc(g.h1)}</a></${headingTag}>

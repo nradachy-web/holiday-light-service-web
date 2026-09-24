@@ -7,9 +7,10 @@ import { BUSINESS as B } from './config.mjs';
 // The closing block: blue-hour photo, next steps, the big phone and the form.
 // label: an honest tag before the photo caption, the same one the page's hero uses (for example
 // "Seasonal work" on permanent and landscape pages, which have no photos of their own work yet).
-export function closing(ctx, page, { heading, text, photoName = 'town-blue-hour-aerial', formOpts = {}, anchor = 'estimate', eyebrow = 'Free estimate', label = '' }) {
+// steps: the next steps to list, when a page needs its own wording (landscape lighting).
+export function closing(ctx, page, { heading, text, photoName = 'town-blue-hour-aerial', formOpts = {}, anchor = 'estimate', eyebrow = 'Free estimate', label = '', steps }) {
   const { copy } = ctx.content;
-  const next = copy.contact.next_steps.map(([t, p], i) => `<li><span class="next-n" aria-hidden="true">${i + 1}</span><div><h3>${esc(t)}</h3><p>${esc(p)}</p></div></li>`).join('');
+  const next = (steps || copy.contact.next_steps).map(([t, p], i) => `<li><span class="next-n" aria-hidden="true">${i + 1}</span><div><h3>${esc(t)}</h3><p>${esc(p)}</p></div></li>`).join('');
   return `<section class="closing" aria-labelledby="close-title">
   <div class="closing-media">${ctx.media.photo(photoName, { sizes: '100vw', alt: '' })}</div>
   <div class="closing-scrim"></div>

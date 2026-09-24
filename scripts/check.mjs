@@ -47,6 +47,26 @@ function push(map, rule, msg) {
   map.get(rule).push(msg);
 }
 const fail = (rule, msg) => push(failures, rule, msg);
+
+// Pixel size of a JPEG (from its SOF marker), cached per file. Share cards are always JPEG.
+const imageSizes = new Map();
+function imageSize(file) {
+  if (imageSizes.has(file)) return imageSizes.get(file);
+  let out = null;
+  try {
+    const b = fss.readFileSync(file);
+    if (b[0] === 0xff && b[1] === 0xd8) {
+      for (let i = 2; i < b.length - 9; ) {
+        if (b[i] !== 0xff) { i++; continue; }
+        const m = b[i + 1];
+        if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) { out = { height: b.readUInt16BE(i + 5), width: b.readUInt16BE(i + 7) }; break; }
+        i += 2 + b.readUInt16BE(i + 2);
+      }
+    }
+  } catch { out = null; }
+  imageSizes.set(file, out);
+  return out;
+}
 const warn = (rule, msg) => push(warnings, rule, msg);
 
 if (!fss.existsSync(DIST)) {
@@ -494,6 +514,17 @@ for (const { file, route } of pages) {
     else if (canon[0].attrs.href !== expectedCanon) fail('canonical: must equal SITE_ORIGIN + BASE_PATH + route', `${route} has "${canon[0].attrs.href}", expected "${expectedCanon}"`);
     const ogUrl = N.find((n) => n.tag === 'meta' && n.attrs.property === 'og:url');
     if (ogUrl && ogUrl.attrs.content !== expectedCanon) warn('canonical: og:url differs from canonical', `${route} og:url "${ogUrl.attrs.content}"`);
+  }
+
+  // Share card: og:image:width and og:image:height must be the real size of the file.
+  const ogMeta = (prop) => N.find((n) => n.tag === 'meta' && n.attrs.property === prop)?.attrs.content;
+  const ogImg = ogMeta('og:image');
+  if (ogImg) {
+    const r = resolveRef(ogImg, route);
+    const dims = r.file ? imageSize(r.file) : null;
+    if (!dims) fail('og:image: share card missing or unreadable', `${route} ${ogImg}`);
+    else if (Number(ogMeta('og:image:width')) !== dims.width || Number(ogMeta('og:image:height')) !== dims.height)
+      fail('og:image: width and height must match the file', `${route} says ${ogMeta('og:image:width')}x${ogMeta('og:image:height')}, ${path.basename(r.file)} is ${dims.width}x${dims.height}`);
   }
 
   // Robots

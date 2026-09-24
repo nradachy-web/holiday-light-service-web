@@ -189,7 +189,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
   if (setup.scene) {
     const name = variant.local[0];
     local = `<div class="local-aside local-aside-fig" data-reveal>
-      <figure class="comp-fig local-fig">${ctx.media.photo(name, { sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption><span class="cap-tag">Seasonal work</span> ${esc(ctx.media.caption(name))}</figcaption></figure>
+      <figure class="comp-fig local-fig fit1x" style="${ctx.media.fit(name)}">${ctx.media.photo(name, { sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption><span class="cap-tag">Seasonal work</span> ${esc(ctx.media.caption(name))}</figcaption></figure>
       ${spellsCard(ctx, s)}
     </div>`;
   } else local = `<div class="local-comp">${composition(ctx, variant.local, { cls: 'comp-local' })}</div>`;

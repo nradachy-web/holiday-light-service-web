@@ -229,6 +229,46 @@ window.__qa = {
     }
     return [...new Set(out)];
   },
+  // The 1x rule (DESIGN.md): no framed photo displays past its own pixels. A frame carries its source
+  // size in --pw and --ph; the displayed size is the cover scale of the picture box. Photos outside a
+  // .fit1x frame are allowed only as full-bleed backdrops and in the What we light panes.
+  photos1x() {
+    const out = [];
+    for (const img of document.querySelectorAll('img[src*="/assets/images/"]')) {
+      if (!img.getClientRects().length || !img.offsetWidth) continue;
+      const frame = img.closest('.fit1x');
+      if (!frame) {
+        if (!img.closest('.closing-media,.ct-media,.sh-bg,.page-hero-media,.fq-bg,.text-hero-media,.pane')) out.push(__qa.sel(img.parentElement) + ' photo outside a .fit1x frame');
+        continue;
+      }
+      const fs = getComputedStyle(frame);
+      const pw = parseFloat(fs.getPropertyValue('--pw')), ph = parseFloat(fs.getPropertyValue('--ph'));
+      if (!pw || !ph) { out.push(__qa.sel(frame) + ' .fit1x without --pw/--ph'); continue; }
+      const fit = getComputedStyle(img).objectFit;
+      const w = img.offsetWidth, h = img.offsetHeight;
+      const scale = fit === 'contain' ? Math.min(w / pw, h / ph) : fit === 'cover' ? Math.max(w / pw, h / ph) : w / pw;
+      if (scale > 1 + 1.5 / pw) out.push(__qa.sel(frame) + ' ' + w + 'x' + h + ' shows a ' + pw + 'x' + ph + ' photo at ' + scale.toFixed(2) + 'x');
+    }
+    return out;
+  },
+  // Home property cards: in each row of cards, the photos, titles and buttons start on one line.
+  cardRows() {
+    const out = [];
+    const rows = new Map();
+    for (const c of document.querySelectorAll('.paths .path')) {
+      const t = Math.round(c.getBoundingClientRect().top);
+      if (!rows.has(t)) rows.set(t, []);
+      rows.get(t).push(c);
+    }
+    for (const row of rows.values()) {
+      if (row.length < 2) continue;
+      for (const s of ['picture', 'h3', '.path-actions .btn', '.path-actions .tlink']) {
+        const tops = row.map((c) => c.querySelector(s).getBoundingClientRect().top);
+        if (Math.max(...tops) - Math.min(...tops) > 0.5) out.push(s + ' tops differ by ' + (Math.max(...tops) - Math.min(...tops)).toFixed(1) + 'px in a row of ' + row.length);
+      }
+    }
+    return out;
+  },
 };`;
 
 // ---------------------------------------------------------------------------
@@ -482,7 +522,7 @@ async function main() {
         const broken = [...document.images].filter((i) => i.getClientRects().length && i.currentSrc !== '' && i.complete && i.naturalWidth === 0).map((i) => i.currentSrc || i.src);
         const unrevealed = [...document.querySelectorAll('[data-reveal]')].filter((e) => getComputedStyle(e).display !== 'none' && __qa.eff(e) < 0.99).map((e) => `${__qa.sel(e)} opacity ${__qa.eff(e).toFixed(2)}`);
         const clipped = __qa.clipped();
-        return { overflow: sw > vw + 1, sw, vw, offenders, min, minAt, small: small.slice(0, 8), smallCount: small.length, broken, unrevealed, clipped };
+        return { overflow: sw > vw + 1, sw, vw, offenders, min, minAt, small: small.slice(0, 8), smallCount: small.length, broken, unrevealed, clipped, photos: __qa.photos1x(), cards: __qa.cardRows() };
       });
       result.minFontPx = Number.isFinite(layout.min) ? +layout.min.toFixed(2) : null;
       if (layout.overflow) f('overflow', `horizontal overflow ${layout.sw}px > ${layout.vw}px: ${layout.offenders.join('; ')}`);
@@ -490,6 +530,8 @@ async function main() {
       if (layout.broken.length) f('images', `broken: ${layout.broken.slice(0, 4).join(', ')}`);
       if (layout.unrevealed.length) f('reveal', `${layout.unrevealed.length} [data-reveal] still hidden after scrolling the whole page: ${layout.unrevealed.slice(0, 4).join(' | ')}`);
       if (layout.clipped.length) f('clipping', `${layout.clipped.length} text element(s) cut off by their container or the screen edge: ${layout.clipped.slice(0, 5).join(' | ')}`);
+      if (layout.photos.length) f('photos 1x', `${layout.photos.length} photo(s) past their own pixels or outside the frame system: ${layout.photos.slice(0, 4).join(' | ')}`);
+      if (layout.cards.length) f('property cards', layout.cards.join(' | '));
 
       // Mobile bar behaviour
       const barCheck = await page.evaluate(async (phone) => {
@@ -587,8 +629,10 @@ async function main() {
           const de = document.documentElement;
           const row = document.querySelector('header.site-header .hdr').getBoundingClientRect();
           const acts = document.querySelector('header.site-header .hdr-actions').getBoundingClientRect();
-          return { overflow: Math.max(de.scrollWidth, document.body.scrollWidth) > de.clientWidth + 1, clipped: __qa.clipped(), row: Math.round(row.right), acts: Math.round(acts.right) };
+          return { overflow: Math.max(de.scrollWidth, document.body.scrollWidth) > de.clientWidth + 1, clipped: __qa.clipped(), row: Math.round(row.right), acts: Math.round(acts.right), photos: __qa.photos1x(), cards: __qa.cardRows() };
         });
+        if (r.photos.length) fail('tablet', `${where}: ${r.photos.length} photo(s) past their own pixels or outside the frame system: ${r.photos.slice(0, 4).join(' | ')}`);
+        if (r.cards.length) fail('tablet', `${where}: property cards ${r.cards.join(' | ')}`);
         if (r.overflow) fail('tablet', `${where}: horizontal overflow`);
         if (r.clipped.length) fail('tablet', `${where}: ${r.clipped.length} text element(s) cut off: ${r.clipped.slice(0, 4).join(' | ')}`);
         if (Math.abs(r.acts - r.row) > 2) fail('tablet', `${where}: header controls end at x=${r.acts}, the header row at x=${r.row}`);

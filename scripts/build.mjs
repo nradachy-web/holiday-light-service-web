@@ -59,30 +59,58 @@ async function ensureFonts() {
   }
 }
 
-// Social preview images. Brand pages crop the Northern Michigan footage posters (their alt text names
-// the region). Local pages and the permanent and landscape pages share a card cropped from one of our
-// own photos whose caption names no place, so a shared local link never implies work in that town.
-async function ogImages() {
-  const largest = (m) => Object.entries(m.files.webp).sort((a, b) => Number(b[0]) - Number(a[0]))[0][1];
-  const jobs = [
-    ['holiday-light-service.jpg', content.mediaItem('hero-tree').files.poster.webp['1920'], 'attention'],
-    ['commercial-holiday-lighting.jpg', content.mediaItem('downtown-wraps').files.poster.webp['1920'], 'centre'],
-    ...Object.values(OG_CARDS).map((c) => [path.basename(c.image), largest(content.mediaItem(c.photo)), c.position]),
-    // One card per guide, cropped from the guide's own photo.
-    ...content.copy.guides.map((g) => [`guide-${g.slug}.jpg`, largest(content.mediaItem(GUIDE_PHOTOS[g.slug] || 'roofline-large-home')), 'attention']),
-  ];
-  const dir = path.join(DIST, 'assets/og');
-  await fsp.mkdir(dir, { recursive: true });
-  for (const [name, src, position] of jobs) {
-    await sharp(path.join(PUBLIC, src)).resize(1200, 630, { fit: 'cover', position }).jpeg({ quality: 78, mozjpeg: true }).toFile(path.join(dir, name));
-  }
-}
-
 // Our own photos for the local and permanent/landscape share cards (captions without a place name).
 const OG_CARDS = {
   home: { image: '/assets/og/residential-roofline.jpg', photo: 'roofline-large-home', position: 'centre' },
   building: { image: '/assets/og/commercial-building.jpg', photo: 'commercial-building-lit-trees', position: 'centre' },
 };
+
+// Social preview images. Brand pages crop the Northern Michigan footage posters (their alt text names
+// the region). Local pages and the permanent and landscape pages share a card cropped from one of our
+// own photos whose caption names no place, so a shared local link never implies work in that town.
+// A card is the largest 1200:630 crop its source holds, at 1200x630 at most: never enlarged, so the
+// 900px house makes a 796x418 card. og:image:width and og:image:height carry each card's real size.
+const OG_W = 1200;
+const OG_H = 630;
+function ogSize(w, h) {
+  if (w / h >= OG_W / OG_H) {
+    const ch = Math.min(h, OG_H);
+    return { width: Math.floor((ch * OG_W) / OG_H), height: ch };
+  }
+  const cw = Math.min(w, OG_W);
+  return { width: cw, height: Math.floor((cw * OG_H) / OG_W) };
+}
+const OG_JOBS = (() => {
+  const largest = (m) => {
+    const [w, p] = Object.entries(m.files.webp).map(([k, v]) => [Number(k), v]).sort((a, b) => b[0] - a[0])[0];
+    return { src: p, w, h: Math.round((w * m.height) / m.width) };
+  };
+  const poster = (name) => {
+    const m = content.mediaItem(name);
+    return { src: m.files.poster.webp['1920'], w: 1920, h: Math.round((1920 * m.height) / m.width) };
+  };
+  const jobs = [
+    { image: '/assets/og/holiday-light-service.jpg', ...poster('hero-tree'), position: 'attention' },
+    { image: '/assets/og/commercial-holiday-lighting.jpg', ...poster('downtown-wraps'), position: 'centre' },
+    ...Object.values(OG_CARDS).map((c) => ({ image: c.image, ...largest(content.mediaItem(c.photo)), position: c.position })),
+    // One card per guide, cropped from the guide's own photo.
+    ...content.copy.guides.map((g) => ({ image: `/assets/og/guide-${g.slug}.jpg`, ...largest(content.mediaItem(GUIDE_PHOTOS[g.slug] || 'roofline-large-home')), position: 'attention' })),
+  ];
+  return jobs.map((j) => ({ ...j, ...ogSize(j.w, j.h) }));
+})();
+const OG_SIZES = new Map(OG_JOBS.map((j) => [j.image, { width: j.width, height: j.height }]));
+
+async function ogImages() {
+  await fsp.mkdir(path.join(DIST, 'assets/og'), { recursive: true });
+  for (const j of OG_JOBS) {
+    const meta = await sharp(path.join(PUBLIC, j.src)).metadata();
+    if (meta.width < j.width || meta.height < j.height) throw new Error(`Share card ${j.image} would enlarge ${j.src} (${meta.width}x${meta.height})`);
+    await sharp(path.join(PUBLIC, j.src))
+      .resize(j.width, j.height, { fit: 'cover', position: j.position, withoutEnlargement: true })
+      .jpeg({ quality: 78, mozjpeg: true })
+      .toFile(path.join(DIST, j.image));
+  }
+}
 
 // Light CSS minification: comments and redundant whitespace only.
 const minifyCss = (css) =>
@@ -114,6 +142,12 @@ async function main() {
       alt: 'A giant multicolor tree lit on the waterfront at night, Northern Michigan.',
       commercialAlt: 'Downtown street trees wrapped in warm white lights at night, Northern Michigan.',
       guide: (slug) => `/assets/og/guide-${slug}.jpg`,
+      // The real pixel size of a share card, for og:image:width and og:image:height.
+      size: (image) => {
+        const s = OG_SIZES.get(image);
+        if (!s) throw new Error('No share card built for ' + image);
+        return s;
+      },
       // Cards for local, permanent and landscape pages: { image, alt } with the alt from media.json.
       card: (key, { seasonal = false } = {}) => {
         const c = OG_CARDS[key];

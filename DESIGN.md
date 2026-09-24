@@ -171,12 +171,25 @@ so the swap does not shift layout.
 - Warm white first. Hero and hero-adjacent slots carry warm white or neutral daylight work only; the
   red and white birch, the multicolor and red and green canopies and the green HOA and spruce shots sit
   lower, each paired with a warm photo, never a section of color alone.
+- **The 1x rule**: a framed photo never displays past its own pixels, at any viewport. Every frame
+  that holds one of our photos (`figure()`, hero frames, local and guide figures, cards) carries the
+  class `fit1x` and, from `media.fit(name)`, its largest source size (`--pw`, `--ph`) and its own
+  proportions (`--pr`). A slot sets its crop as `--crop` (width over height, which is also the
+  picture's aspect ratio; `--crop:initial` for a slot with a set height). `.fit1x` then stops the
+  frame at the widest size the source fills at that crop and centers it in a wider slot, so a tall
+  crop of a wide photo stops sooner. Set crops through `--crop`, never `aspect-ratio` on the picture.
+  Full-bleed backdrops under a scrim (closings, bleed and page heroes, the contact and FAQ grounds) are
+  not frames and are not capped. Where the cap would leave a photo small in a single column, the
+  layout pairs it instead: the permanent local photo beside the estimate checklist (761 to 980px), the
+  guides feature photo beside its text (from 761px), the our-work Homes squares three across.
 - The residential photos are 960px wide or less. Never stretch one across a column: in heroes they
   appear as one of a pair (`heroFrame` gives a landscape photo the wider slot and both one height), in
-  the switcher at their own proportions. The 900px house is never shown wider than about 560px (the
-  switcher, the our-work Homes chapter), so it is not enlarged on retina screens. A panorama wider
-  than 2.5:1 (the pavilion) keeps its own proportions in every composition; paired on a service page
-  it shares one height with its partner in a strip (`composition()`). Tall portrait crops stop at 4:5, and a photo whose subject
+  the switcher at their own proportions. The 900px house stays at 560px or less in the switcher and
+  the our-work Homes chapter; elsewhere the 1x rule caps it. A panorama wider than 2.5:1 (the
+  pavilion) keeps its own proportions in every composition: paired on a service page it shares one
+  height with its partner in a strip (`composition()`), alone it fills the HOA page hero frame, and
+  the home HOA card shows it whole at the foot of its frame on the black of its own night sky
+  (`.path-native`), so the four card frames still line up. Tall portrait crops stop at 4:5, and a photo whose subject
   fills only part of it carries its own crop in media.json (`frame`, with a raised `focal`; the
   evergreens photo is shown square because its lower third is dark gravel).
 - Under a local H1 (landing pages, hubs, their closing sections) use only photos whose captions name no
@@ -190,7 +203,10 @@ so the swap does not shift layout.
   names the region. The 100 local pages and the permanent and landscape pages use cards cut from our
   own photos whose captions name no place (`OG_CARDS` in `build.mjs`: the lit house for residential,
   hubs and permanent, the lit office trees for commercial and landscape), with the photo's alt text,
-  prefixed "Seasonal holiday work:" on permanent and landscape pages.
+  prefixed "Seasonal holiday work:" on permanent and landscape pages. Every card (guides too) is the
+  largest 1200:630 crop its source holds, 1200x630 at most and never enlarged: the 900px house makes a
+  796x418 card. `og:image:width` and `og:image:height` carry each card's real size, and `npm run check`
+  fails if they differ from the file.
 - Text over footage needs 4.5:1 (3:1 for large type) against the brightest 5% of the pixels behind
   it; scrims are tuned for that. On phones the home hero text sits on a near-solid scrim below the
   gable.
@@ -202,9 +218,10 @@ so the swap does not shift layout.
 - **Home**: hero (footage, roofline, H1, CTAs, "Every estimate spells out"; on portrait tablets the
   phone layout, on landscape tablets a deeper scrim, so text never sits on the lit tree), lit statement,
   property path cards (preset the form, link to vertical pages; stacked cards four across from 1241px
-  and two by two from 761px, sharing subgrid rows so titles and buttons line up; each card's own column
+  and two by two from 761px, sharing three subgrid rows (photo, text, actions) so photos, titles and
+  buttons line up at every width; the button and its text link always stack; each card's own column
   is `minmax(0,1fr)`, so a long button label never widens a card or enlarges its photo; each has its
-  own photo and line), What we light, season string, commercial band with a frame-crossing section
+  own photo and line, the HOA card the whole pavilion panorama), What we light, season string, commercial band with a frame-crossing section
   headline (the H1 version lives only on the downtowns page), permanent lighting scenes, crew composition (copy beside the bucket photo, then the wide
   night office beside an offset daylight gable) with the four reasons, service-area county pills,
   closing (next steps, big phone, form).
@@ -263,6 +280,10 @@ so the swap does not shift layout.
   `APEX_FORM_TOKEN` is set. The delivery sentence names both Holiday Light Service and Modern Apex
   Strategies, so it stays true whether the form key delivers to the agency inbox (which passes
   requests on) or to the company office. No form; it closes with a call and estimate strip.
+- **Landscape lighting** (`/landscape-lighting/`): no holiday wording in the shared parts. Its proof
+  row reads "Free estimates for homes and businesses" instead of the bucket trucks (`PROOF_LANDSCAPE`),
+  its closing lists `contact.next_steps_landscape` ("We plan the lighting"), and its questions link
+  reads "All lighting questions".
 - **Process copy by audience**: residential pages use `processSteps(ctx, 'residential')`, which drops
   sentences about commercial projects; commercial pages and `/process/` keep the full copy. Permanent and
   landscape pages use `'permanent'` and `'landscape'`: the residential copy with a last step about setup

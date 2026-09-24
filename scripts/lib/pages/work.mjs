@@ -93,7 +93,7 @@ function item(ctx, it, i, chapterId) {
   }
   const [x, y] = it.ar.split('/').map(Number);
   const tall = x < y ? ' wk-p' : '';
-  return `<figure class="comp-fig wk-fig wk-${it.slot}${tall}" style="--ar:${it.ar};${d}" data-reveal>${ctx.media.photo(it.name, { sizes: it.sizes, focal: it.focal })}<figcaption>${esc(ctx.media.caption(it.name))}</figcaption></figure>`;
+  return `<figure class="comp-fig wk-fig wk-${it.slot}${tall} fit1x" style="${ctx.media.fit(it.name)};--ar:${it.ar};${d}" data-reveal>${ctx.media.photo(it.name, { sizes: it.sizes, focal: it.focal })}<figcaption>${esc(ctx.media.caption(it.name))}</figcaption></figure>`;
 }
 
 function workBody(ctx, page, W) {

@@ -42,10 +42,24 @@ export function createMedia({ url, mediaItem, tinyPosters = {} }) {
 
   const caption = (name) => mediaItem(name).caption;
 
+  /**
+   * The 1x rule (site.css .fit1x): a framed photo never displays past its own pixels. Every frame
+   * that holds a photo carries the class `fit1x` and these custom properties: the largest source
+   * size in CSS px (--pw, --ph) and the photo's own proportions (--pr). The slot sets its crop in
+   * --crop; the frame then stops at the widest size the source fills at that crop.
+   */
+  function fit(name) {
+    const m = mediaItem(name);
+    if (m.kind !== 'photo') throw new Error(name + ' is not a photo');
+    const pw = Math.max(...Object.keys(m.files.webp).map(Number));
+    const ph = Math.round((pw * m.height) / m.width);
+    return `--pw:${pw}px;--ph:${ph}px;--pr:${m.width}/${m.height}`;
+  }
+
   // A captioned figure. The caption always comes from media.json.
-  function figure(name, { sizes, cls = '', eager = false, focal, ratio, frame } = {}) {
-    const style = [ratio ? `--ratio:${ratio}` : '', frame ? `--frame:${frame}` : ''].filter(Boolean).join(';');
-    return `<figure class="${cls}"${style ? ` style="${style}"` : ''}>${photo(name, { sizes, eager, focal })}<figcaption>${esc(caption(name))}</figcaption></figure>`;
+  function figure(name, { sizes, cls = '', eager = false, focal, frame } = {}) {
+    const style = [fit(name), frame ? `--frame:${frame}` : ''].filter(Boolean).join(';');
+    return `<figure class="${cls ? cls + ' ' : ''}fit1x" style="${style}">${photo(name, { sizes, eager, focal })}<figcaption>${esc(caption(name))}</figcaption></figure>`;
   }
 
   /**
@@ -99,5 +113,5 @@ export function createMedia({ url, mediaItem, tinyPosters = {} }) {
     return { html: `<div class="bgv">${picture}${video}</div>`, toggle, caption: m.caption };
   }
 
-  return { photo, figure, bgVideo, caption, asset };
+  return { photo, figure, fit, bgVideo, caption, asset };
 }

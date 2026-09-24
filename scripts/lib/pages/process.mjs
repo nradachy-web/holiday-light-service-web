@@ -57,7 +57,7 @@ function processBody(ctx, page, P) {
   const list = steps
     .map(([t, p], i) => {
       const x = extras[i];
-      const fig = x && typeof x === 'object' ? `<figure class="comp-fig psv-fig" style="--ar:${x.ar}">${ctx.media.photo(x.photo, { sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption>${esc(ctx.media.caption(x.photo))}</figcaption></figure>` : '';
+      const fig = x && typeof x === 'object' ? `<figure class="comp-fig psv-fig fit1x" style="${ctx.media.fit(x.photo)};--ar:${x.ar}">${ctx.media.photo(x.photo, { sizes: '(min-width: 1000px) 560px, 100vw' })}<figcaption>${esc(ctx.media.caption(x.photo))}</figcaption></figure>` : '';
       const inline = typeof x === 'string' ? x : '';
       return `<li class="psv-step${fig ? ' has-fig' : ''}" data-reveal>
       <span class="psv-n" aria-hidden="true">${i + 1}</span>

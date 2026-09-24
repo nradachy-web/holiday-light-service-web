@@ -206,20 +206,27 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .path{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--night-1);overflow:hidden;transition:border-color .35s,box-shadow .35s}
 .path:hover{border-color:rgba(255,209,138,.42);box-shadow:0 0 44px -18px rgba(255,186,96,.55)}
 .path-media{position:relative;display:flex;flex-direction:column}
-.path-media picture{position:relative;display:block;aspect-ratio:4/3;overflow:hidden}
+.path-media{--crop:4/3}
+.path-media picture{position:relative;display:block;overflow:hidden}
 .path-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
 .path:hover .path-media img{transform:scale(1.04)}
+/* A panorama keeps its own proportions (DESIGN.md photo rules). The HOA card shows the whole pavilion
+   at the foot of its frame, on the black of the photo's own night sky, so the four frames still line
+   up and nothing is cropped or enlarged. Stacked on phones, the frame takes the photo's proportions. */
+.path-native picture{display:flex;align-items:flex-end;background:#000}
+.path-native img{position:static;height:auto;aspect-ratio:var(--pr)}
 .path-media figcaption{display:flex;gap:9px;align-items:baseline;padding:12px 20px 0;font-size:13px;line-height:1.45;color:var(--fg-3)}
 .path-media figcaption::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--glow-hi);box-shadow:0 0 8px 2px rgba(255,196,110,.5);flex:none;transform:translateY(-2px)}
-.path-body{display:flex;flex-direction:column;gap:10px;padding:20px 20px 18px;flex:1}
+.path-body{display:flex;flex-direction:column;gap:10px;padding:20px 20px 0;flex:1}
 .path-body h3{font-size:20px}
 .path-body p{font-size:15.5px;line-height:1.55}
-.path-actions{margin-top:auto;padding-top:8px;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.path-actions{padding:18px 20px 18px;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .path-actions .btn{width:100%}
 /* Cards stay stacked (photo on top) at every width: four across from 1241px, two by two from 761px.
-   Subgrid rows line up the photos, titles and buttons of the cards in one row. */
+   Three subgrid rows (photo, text, actions) line up the photos, titles and action rows of the cards in
+   one row: every card's button starts on the same line, however long its neighbor's text or labels run. */
 @media (min-width:761px){
-  .path{display:grid;grid-row:span 2;grid-template-rows:subgrid;grid-template-columns:minmax(0,1fr);row-gap:0}
+  .path{display:grid;grid-row:span 3;grid-template-rows:subgrid;grid-template-columns:minmax(0,1fr);row-gap:0}
 }
 /* The card's own column never grows past the card (a long button label would otherwise widen it and
    enlarge its photo past its neighbors); four across, the buttons trim their side padding to fit, and
@@ -331,6 +338,16 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .scene-add .i{width:17px;height:17px}
 .scene-cap{font-size:13.5px;color:var(--fg-3)}
 
+/* Photos never display past their own pixels (1x), at any viewport. Every frame that holds one of
+   our photos carries .fit1x plus its largest source size (--pw, --ph) and its own proportions (--pr),
+   written by media.mjs from content/media.json. A slot sets its crop in --crop (width over height,
+   the picture's aspect ratio; unset means the photo's own proportions). The frame stops at the widest
+   size the source fills at that crop and centers in a wider slot; a tall crop of a wide photo stops
+   sooner. A slot with a set height (--crop:initial) caps the width at --pw and the height at --ph.
+   Full-bleed backdrops under a scrim (closings, bleed heroes) are not frames and are not capped. */
+.fit1x{width:min(var(--slot,100%),var(--pw),calc(var(--ph) * var(--crop,1000)));margin-inline:auto}
+.fit1x picture{aspect-ratio:var(--crop,auto);max-height:var(--ph)}
+
 /* Crew composition */
 .sec-crew{background:var(--night-1)}
 .crew{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:clamp(20px,2.4vw,36px);row-gap:clamp(36px,4vw,56px);align-items:start}
@@ -345,11 +362,11 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .cfig figcaption,.comp-fig figcaption,.sh-frame figcaption{display:flex;gap:10px;align-items:baseline;padding-top:12px;margin-top:12px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45;color:var(--fg-3)}
 .cfig figcaption::before,.comp-fig figcaption::before,.sh-frame figcaption::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--glow-hi);box-shadow:0 0 8px 2px rgba(255,196,110,.5);flex:none;transform:translateY(-1px)}
 .cfig-a{grid-column:7/13;grid-row:1}
-.cfig-a picture{aspect-ratio:4/3}
+.cfig-a{--crop:4/3}
 .cfig-b{grid-column:9/13;grid-row:2;margin-top:clamp(40px,5vw,88px)}
-.cfig-b picture{aspect-ratio:4/3}
+.cfig-b{--crop:4/3}
 .cfig-c{grid-column:1/9;grid-row:2}
-.cfig-c picture{aspect-ratio:16/8}
+.cfig-c{--crop:16/8}
 
 /* Service area module */
 .sec-area{background:var(--night)}
@@ -472,14 +489,16 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .sh-title{font-size:clamp(38px,4vw,62px);line-height:1;letter-spacing:-.04em;max-width:13em}
 .sh-deco{margin-top:16px;max-width:760px}
 .sh-sub{margin-top:14px;font-size:clamp(17px,1.3vw,19.5px);line-height:1.6;color:var(--fg-2);max-width:36em}
-.sh-frame picture{display:block;border-radius:var(--r);overflow:hidden;aspect-ratio:var(--frame-ar,16/8);border:1px solid var(--line);background:var(--night-2)}
+.sh-frame{--crop:var(--frame-ar,16/8)}
+.sh-frame picture{display:block;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--night-2)}
 .sh-frame img{width:100%;height:100%;object-fit:cover}
 .sh-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.sh-pair .sh-frame picture{aspect-ratio:1/1}
+.sh-pair .sh-frame{--crop:1/1}
 /* A landscape lead photo gets the wider slot and both share one height, so the 900px house photo
    shows at about 470 CSS px instead of stretching across the column. */
 .sh-pair-wide{grid-template-columns:var(--pair-cols,minmax(0,1.5fr) minmax(0,1fr))}
-.sh-pair-wide .sh-frame picture{aspect-ratio:auto;height:clamp(220px,21vw,300px)}
+.sh-pair-wide .sh-frame{--crop:initial}
+.sh-pair-wide .sh-frame picture{height:clamp(220px,21vw,300px)}
 .sh-pair-cap{display:none}
 .sh-film{position:relative}
 .sh-film .bgv{position:relative;aspect-ratio:16/9;border-radius:var(--r);border:1px solid var(--line)}
@@ -506,20 +525,20 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .comp{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(28px,3vw,44px) clamp(18px,2.2vw,32px);align-items:start}
 .comp-fig picture{display:block;overflow:hidden;border-radius:var(--r);background:var(--night-2)}
 .comp-fig img{width:100%;height:100%;object-fit:cover}
-.comp-landscape picture{aspect-ratio:4/3}
-.comp-portrait picture{aspect-ratio:4/5}
+.comp-landscape{--crop:4/3}
+.comp-portrait{--crop:4/5}
 .comp-n1 .comp-1{grid-column:1/-1}
-.comp-n1 .comp-1 picture{aspect-ratio:16/8}
+.comp-n1 .comp-1{--crop:16/8}
 .comp-n2 .comp-1{grid-column:1/8}
 .comp-n2 .comp-2{grid-column:8/13;margin-top:clamp(40px,6vw,110px)}
 .comp-n2 .comp-portrait.comp-1{grid-column:2/7}
 .comp-n2 .comp-portrait.comp-2{grid-column:7/12}
 /* Three photos: a tall lead on the left, two stacked on the right in a landscape crop. */
 .comp-n3 .comp-1{grid-column:1/7;grid-row:1/3}
-.comp-n3 .comp-1 picture{aspect-ratio:4/5}
+.comp-n3 .comp-1{--crop:4/5}
 .comp-n3 .comp-2{grid-column:7/13;grid-row:1}
 .comp-n3 .comp-3{grid-column:7/13;grid-row:2}
-.comp-n3 .comp-2 picture,.comp-n3 .comp-3 picture{aspect-ratio:16/10}
+.comp-n3 .comp-2,.comp-n3 .comp-3{--crop:16/10}
 .comp-n4 .comp-1{grid-column:1/8}
 .comp-n4 .comp-2{grid-column:8/13;margin-top:clamp(40px,6vw,96px)}
 .comp-n4 .comp-3{grid-column:1/6}
@@ -527,12 +546,12 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .comp-local.comp-n2 .comp-1,.comp-local.comp-n2 .comp-portrait.comp-1{grid-column:1/7}
 .comp-local.comp-n2 .comp-2,.comp-local.comp-n2 .comp-portrait.comp-2{grid-column:7/13;margin-top:64px}
 .comp-local.comp-n2:not(:has(.comp-portrait)) .comp-1{grid-column:1/13}
-.comp-local.comp-n2:not(:has(.comp-portrait)) .comp-1 picture{aspect-ratio:16/9}
+.comp-local.comp-n2:not(:has(.comp-portrait)) .comp-1{--crop:16/9}
 .comp-local.comp-n2:not(:has(.comp-portrait)) .comp-2{grid-column:5/13;margin-top:0}
-.comp-local.comp-n2:not(:has(.comp-portrait)) .comp-2 picture{aspect-ratio:16/10}
-.comp.comp-hub .comp-1 picture{aspect-ratio:3/2}
+.comp-local.comp-n2:not(:has(.comp-portrait)) .comp-2{--crop:16/10}
+.comp.comp-hub .comp-1{--crop:3/2}
 .comp.comp-hub .comp-portrait{grid-column:4/13}
-.comp.comp-hub .comp-portrait picture{aspect-ratio:4/5}
+.comp.comp-hub .comp-portrait{--crop:4/5}
 .sec-local{background:var(--night-1);border-top:1px solid var(--line)}
 .local{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(36px,6vw,96px);align-items:start}
 .local-solo{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
@@ -683,8 +702,9 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 @media (max-width:1240px){
   .vcards-page{grid-template-columns:repeat(2,minmax(0,1fr))}
   .paths{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .path-media picture{aspect-ratio:16/10}
-  .path-actions{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 20px}
+  .path-media{--crop:16/10}
+  /* Two by two, the button and its text link stack in every card (one line would fit some cards and
+     not others, and the rows would change shape at different widths). */
   .path-actions .btn{width:auto}
 }
 @media (max-width:1280px){
@@ -782,6 +802,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .statement{padding:72px 0 48px}
   .statement-text{font-size:clamp(25px,7vw,30px);line-height:1.26}
   .paths{grid-template-columns:1fr}
+  .path-native{--crop:var(--pr)}
   .path-actions{flex-direction:column;align-items:flex-start}
   .path-actions .btn{width:100%}
   .sw-bar{align-items:flex-start}
@@ -811,9 +832,11 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .ticks-2{grid-template-columns:1fr}
   /* Split hero on phones: a sharp strip of real work, then the H1 and sub, then the form */
   .sh-media{margin:0 calc(-1 * var(--gutter)) 18px}
-  .sh-frame picture{border-radius:0;border-left:0;border-right:0;aspect-ratio:var(--frame-ar,16/9)}
+  .sh-frame{--crop:var(--frame-ar,16/9)}
+  .sh-frame picture{border-radius:0;border-left:0;border-right:0}
   .sh-pair{gap:2px}
-  .sh-pair .sh-frame picture{aspect-ratio:auto;height:clamp(116px,31vw,236px)}
+  .sh-pair .sh-frame{--crop:initial}
+  .sh-pair .sh-frame picture{height:clamp(116px,31vw,236px)}
   .split-hero .crumbs{display:none}
   .sh-frame figcaption{margin:10px var(--gutter) 0;padding-top:0;border-top:0;font-size:13px}
   .sh-pair .sh-frame figcaption{display:none}
@@ -840,8 +863,8 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .process:not(.process-compact){grid-template-columns:1fr;row-gap:26px}
   .comp{grid-template-columns:1fr;gap:28px}
   .comp .comp-fig{grid-column:1/-1!important;grid-row:auto!important;margin-top:0!important}
-  .comp-n3 .comp-1 picture{aspect-ratio:4/5}
-  .comp-portrait picture{aspect-ratio:4/5}
+  .comp-n3 .comp-1{--crop:4/5}
+  .comp-portrait{--crop:4/5}
   .faq-a p{padding-right:0}
   .f-cols{grid-template-columns:1fr 1fr}
   .f-cols .f-col:last-child{grid-column:1/-1}
@@ -864,7 +887,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .mobile-bar .btn-glow .i{display:none}
   .mb-call{gap:6px}
   .mb-call .i{width:17px;height:17px}
-  .sh-frame picture{aspect-ratio:var(--frame-ar,2/1)}
+  .sh-frame{--crop:var(--frame-ar,2/1)}
   .sh-title{font-size:30px}
   .sh-sub{font-size:16.5px}
   .wm-word{font-size:15.5px}
@@ -998,7 +1021,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .wk-n span{color:var(--glow)}
 .wk-head h2{margin-bottom:16px}
 .wk-act{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin-top:24px}
-.wk-fig picture{aspect-ratio:var(--ar)}
+.wk-fig{--crop:var(--ar)}
 .wk-fig img{transition:transform 1.4s var(--ease)}
 .wk-fig:hover img{transform:scale(1.03)}
 .wk-film-box{position:relative;aspect-ratio:var(--ar);border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--night-2)}
@@ -1007,7 +1030,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .wk-residential .wk-head{grid-column:1/5;grid-row:1;align-self:end}
 /* The house photo is 900px wide: it stops at 560px (about its own pixels on a retina screen) and
    sits beside the chapter head instead of filling the eight-column slot. */
-.wk-residential .wk-a{grid-column:6/12;grid-row:1;align-self:end;width:100%;max-width:560px;justify-self:center}
+.wk-residential .wk-a{grid-column:6/12;grid-row:1;align-self:end;max-width:560px}
 .wk-residential .wk-b{grid-column:1/6;grid-row:2}
 .wk-residential .wk-c{grid-column:6/9;grid-row:2;margin-top:clamp(60px,8vw,128px)}
 .wk-residential .wk-d{grid-column:9/13;grid-row:2;margin-top:clamp(24px,3vw,44px)}
@@ -1034,11 +1057,11 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .ab-copy .lead-body+.lead-body{margin-top:18px}
 .ab-family{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:15.5px;color:var(--fg-3)}
 .ab-fig-a{grid-column:7/13;grid-row:1}
-.ab-fig-a picture{aspect-ratio:4/3}
+.ab-fig-a{--crop:4/3}
 .ab-fig-b{grid-column:1/5;grid-row:2}
-.ab-fig-b picture{aspect-ratio:3/4}
+.ab-fig-b{--crop:3/4}
 .ab-fig-c{grid-column:5/12;grid-row:2;margin-top:clamp(60px,8vw,140px)}
-.ab-fig-c picture{aspect-ratio:16/10}
+.ab-fig-c{--crop:16/10}
 .ab-values{background:var(--night)}
 .ab-h{margin-bottom:clamp(30px,3.4vw,48px)}
 .cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
@@ -1061,7 +1084,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .psv-spells{margin-top:24px;padding:18px 20px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--night-2);max-width:34em}
 .psv-more{margin-top:14px}
 .psv-fig{margin-top:6px}
-.psv-fig picture{aspect-ratio:var(--ar)}
+.psv-fig{--crop:var(--ar)}
 .motion .psv-step.pre:not(.in) .psv-n{box-shadow:0 0 0 5px var(--night-1);border-color:var(--line-2);color:var(--fg-3)}
 .motion .psv-step.in .psv-n{transition:box-shadow .9s ease .3s,border-color .6s ease .3s,color .6s ease .3s}
 
@@ -1104,7 +1127,8 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .gcards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .gcard{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--night-2);overflow:hidden;transition:border-color .35s,box-shadow .35s}
 .gcard:hover,.gcard:focus-within{border-color:rgba(255,209,138,.45);box-shadow:0 0 44px -18px rgba(255,186,96,.55)}
-.gcard-media picture{display:block;aspect-ratio:16/10;overflow:hidden;background:var(--night-3)}
+.gcard-media{--crop:16/10}
+.gcard-media picture{display:block;overflow:hidden;background:var(--night-3)}
 .gcard-media img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
 .gcard:hover .gcard-media img{transform:scale(1.04)}
 .gcard-body{display:flex;flex-direction:column;gap:10px;padding:20px 22px 22px;flex:1}
@@ -1118,7 +1142,8 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .gcard-go .i{width:17px;height:17px;transition:transform .3s var(--ease)}
 .gcard:hover .gcard-go .i{transform:translateX(4px)}
 .gcard-feature{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
-.gcard-feature .gcard-media picture{aspect-ratio:auto;height:100%;min-height:380px}
+.gcard-feature .gcard-media{--crop:5/4}
+.gcard-feature .gcard-media picture{height:auto;min-height:0}
 .gcard-feature .gcard-body{padding:clamp(26px,3.2vw,48px);justify-content:center;gap:14px}
 .gcard-feature .gcard-t{font-size:clamp(28px,2.6vw,40px);letter-spacing:-.032em;line-height:1.06}
 .gcard-feature .gcard-dek{font-size:17px}
@@ -1132,7 +1157,8 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .gd-eyebrow{margin-bottom:16px}
 .gd-title{font-size:clamp(38px,4vw,60px);line-height:1.02;letter-spacing:-.04em;max-width:14em}
 .gd-dek{margin-top:18px;font-size:clamp(18px,1.45vw,21px);line-height:1.55;color:var(--fg-2);max-width:36em}
-.gd-fig picture{display:block;aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--night-2)}
+.gd-fig{--crop:16/10}
+.gd-fig picture{display:block;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--night-2)}
 .gd-fig img{width:100%;height:100%;object-fit:cover}
 .gd-fig figcaption,.psv-fig figcaption{display:flex;gap:10px;align-items:baseline}
 .gd-fig figcaption{padding-top:12px;margin-top:12px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45;color:var(--fg-3)}
@@ -1179,6 +1205,15 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .cta-in h2{max-width:13em}
 .cta-act{display:flex;flex-wrap:wrap;gap:12px}
 
+/* Guide article: the three-column grid needs about 1400px; below that the aside keeps a real width. */
+@media (max-width:1400px){
+  .gd-grid{grid-template-columns:minmax(0,1fr) 280px}
+  .gd-toc{position:static;grid-column:1/-1;padding-bottom:8px}
+  .gd-toc ol{grid-template-columns:repeat(2,minmax(0,1fr));border-left:0;column-gap:24px}
+  .gd-toc a{padding-left:0;border-left:0;border-bottom:1px solid var(--line)}
+  .gd-toc a:hover{border-bottom-color:var(--glow)}
+}
+
 @media (max-width:1180px){
   .gd-grid{grid-template-columns:minmax(0,1fr) 280px}
   .gd-toc{position:static;grid-column:1/-1;padding-bottom:8px}
@@ -1192,7 +1227,7 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .wk-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
   .wk-grid>*{grid-column:1/-1!important;grid-row:auto!important;margin-top:0!important}
   .wk-grid>.wk-p{grid-column:span 3!important}
-  .wk-residential .wk-a{justify-self:start}
+  .wk-residential .wk-a{margin-inline:0}
   .ab-grid>*{grid-column:1/-1!important;grid-row:auto!important;margin-top:0!important}
   .ab-fig-b{max-width:520px}
   .ab-vcards{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1204,14 +1239,18 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .ct-grid{grid-template-columns:1fr;grid-template-areas:"head" "form" "more"}
   .ct-form{margin-top:26px;max-width:600px}
   .gcards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .gcard-feature{grid-template-columns:1fr}
-  .gcard-feature .gcard-media picture{aspect-ratio:16/9;min-height:0}
   .gd-head{grid-template-columns:1fr;align-items:start}
   .gd-media{max-width:640px}
   .gd-grid{grid-template-columns:1fr}
   .gd-aside{position:static;max-width:560px}
   .pv-grid{grid-template-columns:1fr}
   .gd-more .split-head .lead-s{justify-self:start}
+}
+/* Our work, Homes on tablets: the evergreens, canopy and birch photos sit three across as squares, so
+   none is stretched across the column (the evergreens photo is 720px wide). */
+@media (min-width:761px) and (max-width:980px){
+  .wk-residential .wk-b,.wk-residential .wk-c,.wk-residential .wk-d{grid-column:span 2!important}
+  .wk-residential .wk-c,.wk-residential .wk-d{--crop:1/1}
 }
 @media (max-width:760px){
   .mhero{min-height:0;padding-top:calc(var(--header) + 50vw)}
@@ -1221,11 +1260,11 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .mhero .page-hero-foot{justify-content:space-between}
   .fq-bg{height:560px}
   .wk-grid>.wk-p{grid-column:1/-1!important}
-  .wk-fig.wk-p picture{aspect-ratio:4/5}
+  .wk-fig.wk-p{--crop:4/5}
   .wk-grid{row-gap:32px}
   .wk-film-box{aspect-ratio:16/10;margin:0 calc(-1 * var(--gutter));border-radius:0;border-left:0;border-right:0}
   .ab-fig-b{max-width:none}
-  .ab-fig-b picture{aspect-ratio:4/5}
+  .ab-fig-b{--crop:4/5}
   .cards4,.ab-vcards{grid-template-columns:1fr}
   .psv::before{left:17px}
   .psv-step,.psv-step.has-fig{grid-template-columns:34px minmax(0,1fr);column-gap:16px}
@@ -1236,6 +1275,9 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
   .fq-jump .pill{flex:none}
   .phead-act .btn{width:100%}
   .gcards-3,.gcards-4{grid-template-columns:1fr}
+  .gcard-feature{grid-template-columns:1fr}
+  .gcard-feature .gcard-media{--crop:16/9}
+  .gcard-feature .gcard-media picture{min-height:0}
   .gd-toc ol{grid-template-columns:1fr}
   .gd-sec p,.pv-list li{font-size:17px}
   .gd-media{margin:0 calc(-1 * var(--gutter))}
@@ -1298,7 +1340,12 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 /* An honest tag in front of a caption ("Seasonal work") */
 .cap-tag{display:inline-flex;align-items:center;flex:none;padding:1px 9px;border-radius:999px;border:1px solid rgba(255,209,138,.45);background:rgba(255,209,138,.08);color:var(--glow);font-size:12.5px;font-weight:600;letter-spacing:.03em;white-space:nowrap}
 .local-aside-fig{display:grid;gap:24px}
-.local-fig picture{aspect-ratio:16/10}
+/* Permanent local pages on tablets: the seasonal photo pairs with the estimate checklist instead of
+   running across the single column, where the 900px house would be shown past its pixels. */
+@media (min-width:761px) and (max-width:980px){
+  .local-aside-fig{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:start}
+}
+.local-fig{--crop:16/10}
 
 /* Thank-you: what happens next and the request recap */
 .ty-next{margin-top:44px;max-width:640px}
@@ -1306,8 +1353,9 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 .ty-next .next{margin:18px 0 0}
 .ty-recap{display:inline-flex;margin-bottom:26px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,209,138,.4);background:rgba(255,209,138,.08);color:var(--fg);font-size:15px}
 
-/* Guides hub: the feature photo column stays narrow enough for the photo's own pixels. */
-@media (min-width:981px){
+/* Guides hub: the feature photo sits beside its text from 761px up, in a column narrow enough for the
+   photo's own pixels (stacked, its 16:9 slot would run wider than the 720px photo). */
+@media (min-width:761px){
   .gcard-feature{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
 }
 /* Guide head: all five scene pills fit on one row in the narrow column. */
@@ -1374,9 +1422,9 @@ h3{font-size:21px;line-height:1.22;letter-spacing:-.016em}
 /* Thank-you: the next steps run lower than the other text heroes, so the photo fades to night behind them. */
 .text-hero-thanks .text-hero-scrim{background:linear-gradient(180deg,rgba(5,7,13,.72) 0%,rgba(5,7,13,.5) 28%,rgba(5,7,13,.86) 52%,var(--night) 72%),linear-gradient(90deg,rgba(5,7,13,.8) 0%,rgba(5,7,13,.3) 70%)}
 /* A photo whose subject fills only part of its frame carries its own crop (media.json `frame`). */
-.comp .comp-fig.has-frame picture{aspect-ratio:var(--frame)}
+.comp .comp-fig.has-frame{--crop:var(--frame)}
 /* Panoramas keep their own proportions in every composition, whatever slot crop the layout sets. */
-.comp.comp-n2 .comp-fig.comp-wide.has-frame picture,.comp-local.comp-n2 .comp-fig.comp-wide.has-frame picture{aspect-ratio:var(--frame)}
+.comp.comp-n2 .comp-fig.comp-wide.has-frame,.comp-local.comp-n2 .comp-fig.comp-wide.has-frame{--crop:var(--frame)}
 /* A pair with a panorama shares one height, each photo at its own frame (composition() sets the columns). */
 @media (min-width:761px){
   .comp.comp-strip{grid-template-columns:var(--strip-cols);align-items:start}

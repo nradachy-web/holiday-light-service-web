@@ -1,0 +1,84 @@
+name: Deploy Holiday Light Service to GitHub Pages
+
+# Build settings come from repository variables (Settings > Secrets and variables > Actions > Variables).
+# Unset variables fall back to the noindex preview on nradachy-web.github.io/holiday-light-service-web.
+#   SITE_ORIGIN      https://nradachy-web.github.io (preview) or https://holidaylightservicemi.com (launch)
+#   BASE_PATH        /holiday-light-service-web (preview). A custom-domain SITE_ORIGIN builds at the root
+#                    automatically; "/" or "none" also means root, since a variable cannot be empty.
+#   INDEXABLE        "true" only at launch
+#   WEB3FORMS_KEY    Web3Forms access key; unset keeps the form in preview mode (sends nothing)
+#   GTM_ID           optional Google Tag Manager container id
+#   APEX_FORM_TOKEN  optional Modern Apex attribution token
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Resolve build settings
+        env:
+          V_SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+          V_BASE_PATH: ${{ vars.BASE_PATH }}
+          V_INDEXABLE: ${{ vars.INDEXABLE }}
+          V_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_KEY }}
+          V_GTM_ID: ${{ vars.GTM_ID }}
+          V_APEX_FORM_TOKEN: ${{ vars.APEX_FORM_TOKEN }}
+        run: |
+          origin="${V_SITE_ORIGIN:-https://nradachy-web.github.io}"
+          origin="${origin%/}"
+          if [ -n "$V_BASE_PATH" ]; then
+            base="$V_BASE_PATH"
+          elif [[ "$origin" == *".github.io" ]]; then
+            base="/holiday-light-service-web"
+          else
+            base=""
+          fi
+          if [ "$base" = "/" ] || [ "$base" = "none" ]; then base=""; fi
+          indexable="${V_INDEXABLE:-false}"
+          {
+            echo "SITE_ORIGIN=$origin"
+            echo "BASE_PATH=$base"
+            echo "INDEXABLE=$indexable"
+            echo "WEB3FORMS_KEY=$V_WEB3FORMS_KEY"
+            echo "GTM_ID=$V_GTM_ID"
+            echo "APEX_FORM_TOKEN=$V_APEX_FORM_TOKEN"
+          } >> "$GITHUB_ENV"
+          echo "Building for ${origin}${base}/ (indexable: ${indexable}, form delivery: $([ -n "$V_WEB3FORMS_KEY" ] && echo direct || echo preview), GTM: ${V_GTM_ID:-off}, attribution: $([ -n "$V_APEX_FORM_TOKEN" ] && echo on || echo off))"
+      - run: npm ci
+      - name: Build site
+        run: npm run build
+      - name: Check every generated page
+        env:
+          ALLOW_PLANNED: ${{ vars.ALLOW_PLANNED }}
+        run: npm run check
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

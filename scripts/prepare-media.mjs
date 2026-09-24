@@ -25,7 +25,8 @@
 //        xfade:    the tail of the shot dissolves into its head with a smoothstep curve, so the last
 //                  frame leads straight into frame 0. Used for shots with traffic or people.
 //   3. x264 (high profile, yuv420p, faststart, no audio) with a CRF search against a bitrate budget:
-//        1080p <= 4.5 MB per 10 s, 720p <= 1.8 MB per 10 s, portrait 720x1280 <= 2 MB per 10 s.
+//        1080p <= 4.5 MB per 10 s, 720p <= 1.8 MB per 10 s, portrait 540x960 <= 650 KB per 10 s
+//        (its poster stays 720x1280; the file keeps the contract name -portrait-720.mp4).
 //   4. Posters are rendered from loop frame 0, so the poster always equals the first video frame.
 
 import fs from 'node:fs';
@@ -437,7 +438,9 @@ async function runVideos() {
     const dur = plan.length / FPS;
     const src = path.join(...v.src);
     const variants = [{ key: 'landscape', crop: v.crop, size: [1920, 1080], outs: [['1080', [1920, 1080], 450000], ['720', [1280, 720], 180000]] }];
-    if (v.portrait) variants.push({ key: 'portrait', crop: v.portrait.crop, size: v.portrait.size, outs: [['portrait-720', v.portrait.size, 200000]] });
+    // The phone loop is encoded at 540x960 to stay under 700 KB (it starts after load and idle, and never
+    // on Save-Data or 2g/3g); the poster that paints first is rendered at the full 720x1280 crop.
+    if (v.portrait) variants.push({ key: 'portrait', crop: v.portrait.crop, size: v.portrait.size, outs: [['portrait-720', [540, 960], 65000]] });
     for (const va of variants) {
       const rawIn = path.join(dir, `${v.name}-${va.key}-src.rgb`);
       const rawOut = path.join(dir, `${v.name}-${va.key}-loop.rgb`);

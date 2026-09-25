@@ -1,9 +1,9 @@
 // City hubs /service-area/<city>/ and the /service-area/ directory grouped by county.
-import { esc } from '../html.mjs';
+import { esc, bindMI, paras } from '../html.mjs';
 import { icon } from '../icons.mjs';
 import { STRINGS } from '../roofline.mjs';
 import { splitHero, heroFrame, cityEyebrow } from '../heroes.mjs';
-import { crumbs } from '../blocks.mjs';
+import { crumbs, nearbyLinks } from '../blocks.mjs';
 import { closing, composition } from '../sections.mjs';
 import { quoteForm } from '../form.mjs';
 import { LOCAL_SERVICES } from '../config.mjs';
@@ -90,7 +90,7 @@ function hubBody(ctx, page, city, photos, aroundPhoto, nearbySlugs) {
   });
   const cards = LOCAL_SERVICES.map((slug, i) => {
     const s = service(slug);
-    return `<li class="svc-card" data-reveal style="--d:${i * 80}ms"><a href="${ctx.url(`/${slug}/${city.slug}/`)}"><span class="svc-card-k">${esc(s.short)}</span><span class="svc-card-t">${esc(city.pages[slug].h1)}</span><span class="svc-card-s">${esc(city.hub.highlights[i] || s.summary)}</span><span class="svc-card-go">${icon('arrow')}</span></a></li>`;
+    return `<li class="svc-card" data-reveal style="--d:${i * 80}ms"><a href="${ctx.url(`/${slug}/${city.slug}/`)}"><span class="svc-card-k">${esc(s.short)}</span><span class="svc-card-t">${bindMI(esc(city.pages[slug].h1))}</span><span class="svc-card-s">${esc(city.hub.highlights[i] || s.summary)}</span><span class="svc-card-go">${icon('arrow')}</span></a></li>`;
   }).join('');
   const neighbors = nearbySlugs.map((n) => ctx.content.city(n));
   const HC = ctx.content.copy.service_area.hub_closing;
@@ -102,7 +102,7 @@ function hubBody(ctx, page, city, photos, aroundPhoto, nearbySlugs) {
     <div class="local-copy" data-reveal>
       <p class="place-tag">${icon('pin')}<span>${esc(city.display)}</span><span class="place-county">${esc(city.county)}</span></p>
       <h2 id="local-title">Around ${esc(city.name)}</h2>
-      <p class="lead-body">${esc(city.hub.local_context)}</p>
+      ${paras(city.hub.local_context)}
     </div>
     <div class="local-comp">${composition(ctx, [aroundPhoto], { cls: 'comp-local comp-hub' })}</div>
   </div>
@@ -117,8 +117,8 @@ function hubBody(ctx, page, city, photos, aroundPhoto, nearbySlugs) {
 
 <section class="sec sec-nearby" aria-labelledby="nearby-title">
   <div class="wrap nearby">
-    <h2 id="nearby-title" class="h-quiet">Nearby communities</h2>
-    <ul class="city-pills">${neighbors.map((n) => `<li><a class="city-pill" href="${ctx.url(`/service-area/${n.slug}/`)}">${esc(n.display)}</a></li>`).join('')}</ul>
+    <h2 id="nearby-title" class="h-quiet">Also serving near ${esc(city.name)}</h2>
+    ${nearbyLinks(neighbors.map((n) => ({ href: ctx.url(`/service-area/${n.slug}/`), name: n.display, county: n.county, why: n.hub.highlights[0] || '' })))}
     <p class="nearby-links"><a class="tlink" href="${ctx.url('/service-area/')}">The full service area${icon('arrow')}</a></p>
   </div>
 </section>

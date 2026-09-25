@@ -28,7 +28,7 @@ export default function contactPages(ctx) {
 
 function contactBody(ctx, page, C) {
   const { copy } = ctx.content;
-  const form = quoteForm(ctx, page, { placement: 'hero', anchor: 'estimate', heading: 'Tell us what to light' });
+  const form = quoteForm(ctx, page, { placement: 'hero', anchor: 'estimate', heading: 'Get my free estimate', compact: true });
   const next = C.next_steps.map(([t, p], i) => `<li><span class="next-n" aria-hidden="true">${i + 1}</span><div><h3>${esc(t)}</h3><p>${esc(p)}</p></div></li>`).join('');
   const faqs = BEFORE_YOU_CALL.map((re) => copy.faq.items.find(([q]) => re.test(q))).filter(Boolean);
 

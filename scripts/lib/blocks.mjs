@@ -1,6 +1,6 @@
 // Shared content blocks: breadcrumbs, FAQ, check rows, county pills, the What we light switcher,
 // the season light string, the permanent lighting scene switcher and the lit statement.
-import { esc, litWords, pad2 } from './html.mjs';
+import { esc, litWords, pad2, bindMI } from './html.mjs';
 import { icon } from './icons.mjs';
 import { STRINGS } from './roofline.mjs';
 
@@ -194,4 +194,12 @@ export function planRow(ctx, { current = 'Business' } = {}) {
   <div class="plan-pills" role="group" aria-labelledby="plan-h">${PLAN.map(([v, l]) => `<button class="pill pill-sm" type="button" aria-pressed="${v === current}" data-preset-property="${esc(v)}" data-plan-pill>${esc(l)}</button>`).join('')}</div>
   <p class="plan-links">More on ${links}.</p>
 </div>`;
+}
+
+// Nearby communities as links: name, county and one line of verified copy from that community's hub.
+// items: [{ href, name, county, why }]
+export function nearbyLinks(items) {
+  return `<ul class="near-list">${items
+    .map((n) => `<li><a class="near-link" href="${n.href}"><span class="near-top"><span class="near-name">${bindMI(esc(n.name))}</span><span class="near-county">${esc(n.county)}</span></span>${n.why ? `<span class="near-why">${esc(n.why)}</span>` : ''}</a></li>`)
+    .join('')}</ul>`;
 }

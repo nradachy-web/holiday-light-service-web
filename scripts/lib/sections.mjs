@@ -25,7 +25,7 @@ export function closing(ctx, page, { heading, text, photoName = 'town-blue-hour-
       <a class="big-phone" href="${B.tel}" data-contact="phone" data-placement="closing">${icon('phone')}<span><span class="big-phone-k">Prefer to talk it through?</span>${B.phone}</span></a>
       <p class="media-cap closing-cap">${label ? `<span class="cap-tag">${esc(label)}</span>` : ''}<span>Photo: ${esc(ctx.media.caption(photoName))}</span></p>
     </div>
-    <div class="closing-form">${quoteForm(ctx, page, { placement: 'closing', anchor, heading: 'Tell us what to light', ...formOpts })}</div>
+    <div class="closing-form">${quoteForm(ctx, page, { placement: 'closing', anchor, heading: 'Get my free estimate', compact: true, ...formOpts })}</div>
   </div>
 </section>`;
 }

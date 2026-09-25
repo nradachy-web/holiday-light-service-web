@@ -25,8 +25,9 @@ export const resetFormIds = () => {
  * opts.lights     what_to_light values to preselect
  * opts.property   property_type value to preselect
  * opts.heading    card title
+ * opts.compact    skip the q-note and q-call lines (the section beside the card already shows the next steps and the phone)
  */
-export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', city = null, lights = [], property = null, heading = 'Get my free estimate', steps } = {}) {
+export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', city = null, lights = [], property = null, heading = 'Get my free estimate', steps, compact = false } = {}) {
   const { counties } = ctx.content;
   const n = ++formCount;
   const uid = `q${n}`;
@@ -53,18 +54,18 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
   const stepDefs =
     total === 2
       ? [
-          { dot: 'What', legend: 'What should we light?', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}${propertyGroup}` },
+          { dot: 'What', legend: 'What should we light?', next: 'Next: your details', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}${propertyGroup}` },
           { dot: 'You', legend: 'How do we reach you?', body: `${contact}${citySelect}${address}` },
         ]
       : [
-          { dot: 'What', legend: 'What should we light?', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}` },
-          { dot: 'Where', legend: 'Where is the property?', body: `${propertyGroup}${citySelect}${address}` },
+          { dot: 'What', legend: 'What should we light?', next: 'Next: the property', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}` },
+          { dot: 'Where', legend: 'Where is the property?', next: 'Next: your details', body: `${propertyGroup}${citySelect}${address}` },
           { dot: 'You', legend: 'How do we reach you?', body: contact },
         ];
 
   const stepsHtml = stepDefs
     .map(
-      (s, i) => `<fieldset class="q-step" data-step="${i + 1}"${i === 0 ? ' data-step-active' : ''}>
+      (s, i) => `<fieldset class="q-step" data-step="${i + 1}"${s.next ? ` data-next-label="${esc(s.next)}"` : ''}${i === 0 ? ' data-step-active' : ''}>
       <legend class="q-legend">${esc(s.legend)}</legend>
       ${s.body}
       ${i === stepDefs.length - 1 ? '<p class="q-summary" data-summary hidden></p>' : ''}
@@ -93,14 +94,14 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
   ${stepsHtml}
   <div class="q-actions">
     <button class="btn btn-quiet q-back" type="button" data-back hidden>${icon('back')}<span>Back</span></button>
-    <button class="btn btn-night q-next" type="button" data-next><span>Next</span>${icon('arrow')}</button>
+    <button class="btn btn-night q-next" type="button" data-next><span data-next-text>${esc(stepDefs[0].next)}</span>${icon('arrow')}</button>
     <button class="btn btn-night q-submit" type="submit"${live ? '' : ' disabled data-preview-lock'}><span>Get my free estimate</span>${icon('arrow')}</button>
   </div>
   <p class="q-status" role="status" data-status></p>
   <p class="sr-only" aria-live="polite" data-step-announce></p>
   ${live ? '' : `<noscript><p class="q-noscript">This preview form needs JavaScript. Call <a href="${B.tel}" data-contact="phone" data-placement="${esc(placement)}_noscript">${B.phone}</a> for your free estimate.</p></noscript>`}
-  <p class="q-note">${esc(note)}</p>
-  <p class="q-call">Prefer to talk? <a href="${B.tel}" data-contact="phone" data-placement="${esc(placement)}_card">${icon('phone')}<span>Call ${B.phone}</span></a></p>
+  ${compact ? '' : `<p class="q-note">${esc(note)}</p>
+  <p class="q-call">Prefer to talk? <a href="${B.tel}" data-contact="phone" data-placement="${esc(placement)}_card">${icon('phone')}<span>Call ${B.phone}</span></a></p>`}
 </form>
 </div>`;
 }

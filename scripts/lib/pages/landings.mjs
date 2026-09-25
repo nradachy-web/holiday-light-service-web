@@ -2,11 +2,11 @@
 // The form sits beside the literal H1 on desktop and right after the H1 and sub on phones,
 // with the city preset and a two-step flow. Photos rotate by a neighbor-aware coloring so
 // adjacent communities do not get identical pages.
-import { esc } from '../html.mjs';
+import { esc, bindMI, paras } from '../html.mjs';
 import { icon } from '../icons.mjs';
 import { STRINGS } from '../roofline.mjs';
 import { splitHero, heroFrame, cityEyebrow } from '../heroes.mjs';
-import { considerationCards, processRow, faqList, faqSchema, ticks, sceneSwitcher, planRow, SPELLS, SPELLS_PERMANENT } from '../blocks.mjs';
+import { considerationCards, nearbyLinks, processRow, faqList, faqSchema, ticks, sceneSwitcher, planRow, SPELLS, SPELLS_PERMANENT } from '../blocks.mjs';
 import { quoteForm } from '../form.mjs';
 import { closing, composition } from '../sections.mjs';
 import { LOCAL_SERVICES, BUSINESS } from '../config.mjs';
@@ -20,6 +20,7 @@ export const LANDING_SETUP = {
   'christmas-light-installation': {
     topic: 'Christmas light installation',
     anchor: 'Christmas lights',
+    planning: 'Planning Christmas lights',
     lights: ['Roofline'],
     property: 'Home',
     deco: 'eave',
@@ -35,6 +36,7 @@ export const LANDING_SETUP = {
   'commercial-holiday-lighting': {
     topic: 'commercial Christmas lights and holiday lighting',
     anchor: 'Commercial lighting',
+    planning: 'Planning commercial lighting',
     lights: [],
     property: 'Business',
     deco: 'outline',
@@ -52,6 +54,7 @@ export const LANDING_SETUP = {
   'permanent-lighting': {
     topic: 'permanent Christmas lights',
     anchor: 'Permanent lights',
+    planning: 'Planning permanent lighting',
     lights: ['Permanent lighting'],
     property: 'Home',
     deco: 'track',
@@ -194,10 +197,12 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
     </div>`;
   } else local = `<div class="local-comp">${composition(ctx, variant.local, { cls: 'comp-local' })}</div>`;
 
-  const nearbyPills = nearby
-    .map((slug) => cityOf(slug))
-    .map((n) => `<li><a class="city-pill" href="${ctx.url(`/${s.slug}/${n.slug}/`)}">${esc(setup.anchor)} in ${esc(n.display)}</a></li>`)
-    .join('');
+  const si = LOCAL_SERVICES.indexOf(s.slug);
+  const nearbyList = nearbyLinks(
+    nearby
+      .map((slug) => cityOf(slug))
+      .map((n) => ({ href: ctx.url(`/${s.slug}/${n.slug}/`), name: `${setup.anchor} in ${n.display}`, county: n.county, why: n.hub.highlights[si] || '' }))
+  );
   const others = ['christmas-light-installation', 'commercial-holiday-lighting', 'permanent-lighting']
     .filter((x) => x !== s.slug)
     .map((x) => `<a class="tlink tlink-sm" href="${ctx.url(`/${x}/${city.slug}/`)}">${esc(LANDING_SETUP[x].anchor)} in ${esc(city.name)}${icon('arrow')}</a>`)
@@ -211,7 +216,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
     <div class="local-copy" data-reveal>
       <p class="place-tag">${icon('pin')}<span>${esc(city.display)}</span><span class="place-county">${esc(city.county)}</span></p>
       <h2 id="local-title">${esc(highlight)}</h2>
-      <p class="lead-body">${esc(P.local_paragraph)}</p>
+      ${paras(P.local_paragraph)}
     </div>
     ${local}
   </div>
@@ -219,7 +224,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
 
 <section class="sec sec-consider" aria-labelledby="consider-title">
   <div class="wrap">
-    <h2 id="consider-title" class="h-quiet" data-reveal>What we plan for in ${esc(city.name)}</h2>
+    <h2 id="consider-title" class="h-quiet" data-reveal>${esc(setup.planning)} in ${esc(city.name)}</h2>
     ${considerationCards(P.considerations)}
   </div>
 </section>
@@ -242,7 +247,7 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
 <section class="sec sec-faq" aria-labelledby="faq-title">
   <div class="wrap faq-wrap">
     <div class="faq-side" data-reveal>
-      <h2 id="faq-title">Before you book</h2>
+      <h2 id="faq-title">Before you book in ${esc(city.name)}</h2>
       <p class="lead-s">Common questions about ${esc(setup.topic)} in ${esc(city.name)}.</p>
       ${relatedGuide(ctx, s.slug)}
     </div>
@@ -252,9 +257,9 @@ function landingBody(ctx, page, { s, setup, city, P, variant, faqs, nearby }) {
 
 <section class="sec sec-nearby" aria-labelledby="nearby-title">
   <div class="wrap nearby">
-    <h2 id="nearby-title" class="h-quiet">Nearby communities</h2>
-    <ul class="city-pills">${nearbyPills}</ul>
-    <p class="nearby-also"><span class="nearby-also-k">Also in ${esc(city.name)}</span>${others}<a class="tlink tlink-sm" href="${ctx.url(`/service-area/${city.slug}/`)}">All holiday lighting in ${esc(city.display)}${icon('arrow')}</a></p>
+    <h2 id="nearby-title" class="h-quiet">Also serving near ${esc(city.name)}</h2>
+    ${nearbyList}
+    <p class="nearby-also"><span class="nearby-also-k">Also in ${esc(city.name)}</span>${others}<a class="tlink tlink-sm" href="${ctx.url(`/service-area/${city.slug}/`)}">All holiday lighting in ${bindMI(esc(city.display))}${icon('arrow')}</a></p>
     <p class="nearby-links"><a class="tlink" href="${ctx.url(`/${s.slug}/`)}">${esc(service(s.slug).name)} across Southeast Michigan${icon('arrow')}</a></p>
   </div>
 </section>

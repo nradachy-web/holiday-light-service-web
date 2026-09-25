@@ -50,3 +50,23 @@ export function hash(str) {
 }
 
 export const json = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
+
+// Keeps ", MI" on the line with its city name (escaped text in, HTML out).
+export const bindMI = (html) => String(html).replace(/, MI\b/g, ',&nbsp;MI');
+
+// Long local paragraphs (over about 70 words) render as two, split at the sentence boundary nearest
+// the middle. Returns escaped <p> markup.
+export function paras(text, cls = 'lead-body') {
+  const t = String(text || '');
+  const words = t.split(/\s+/).filter(Boolean).length;
+  const out = (x) => `<p class="${cls}">${esc(x)}</p>`;
+  if (words <= 70) return out(t);
+  const mid = t.length / 2;
+  let best = -1;
+  for (const m of t.matchAll(/[.!?]\s+(?=[A-Z0-9"])/g)) {
+    const at = m.index + m[0].length;
+    if (best < 0 || Math.abs(at - mid) < Math.abs(best - mid)) best = at;
+  }
+  if (best < 0) return out(t);
+  return out(t.slice(0, best).trim()) + '\n      ' + out(t.slice(best).trim());
+}

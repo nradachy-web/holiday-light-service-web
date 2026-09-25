@@ -402,6 +402,9 @@
       });
       dots.forEach(function (li, i) { li.classList.toggle('is-on', i <= n); });
       if (back) back.hidden = n === 0;
+      var nextText = next && next.querySelector('[data-next-text]');
+      var nextLabel = steps[n].getAttribute('data-next-label');
+      if (nextText && nextLabel) nextText.textContent = nextLabel;
       if (n === steps.length - 1) form.setAttribute('data-at-last', ''); else form.removeAttribute('data-at-last');
       if (n === steps.length - 1) writeSummary();
       if (announce && moved) announce.textContent = 'Step ' + (n + 1) + ' of ' + steps.length + ': ' + steps[n].querySelector('legend').textContent;
@@ -501,7 +504,14 @@
         return;
       }
 
-      submit.disabled = true;
+      if (submit.getAttribute('aria-busy') === 'true') return;
+      var submitText = submit.querySelector('span');
+      var submitLabel = submitText ? submitText.textContent : '';
+      var busy = function (on) {
+        if (on) submit.setAttribute('aria-busy', 'true'); else submit.removeAttribute('aria-busy');
+        if (submitText) submitText.textContent = on ? 'Sending your request' : submitLabel;
+      };
+      busy(true);
       setStatus('Sending your request.', false);
       var payload = {
         access_key: val('access_key'),
@@ -545,8 +555,8 @@
           setTimeout(leave, gtm ? 1700 : 150);
         })
         .catch(function () {
-          submit.disabled = false;
-          setStatus('Your request did not send. Please call us and we will take it by phone.' + callButton('error'), true);
+          busy(false);
+          setStatus('That did not go through. Your details are still here, so try again, or call <a href="' + TEL + '" data-contact="phone" data-placement="' + placement + '_error">' + PHONE + '</a>.', true);
         });
     });
 
@@ -596,13 +606,17 @@
      card's footer does not hide the bar and its phone number. ---- */
   safe('mobile-bar', function () {
     var bar = d.querySelector('[data-mobile-bar]');
-    if (!bar || !('IntersectionObserver' in w)) return;
+    if (!bar) return;
     var targets = $$('form[data-quote] [data-step], form[data-quote] .q-actions, [data-bar-hide]');
+    if (!('IntersectionObserver' in w) || !targets.length) { bar.classList.add('is-ready'); return; }
     var visible = new Set();
     var sync = function () { bar.classList.toggle('is-hidden', visible.size > 0); };
+    // The bar starts hidden (.js .mobile-bar:not(.is-ready)) and only becomes ready once the
+    // observer has reported, so it never flashes over a form on the first screen.
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) visible.add(en.target); else visible.delete(en.target); });
       sync();
+      if (!bar.classList.contains('is-ready')) w.requestAnimationFrame(function () { bar.classList.add('is-ready'); });
     });
     targets.forEach(function (t) { io.observe(t); });
     // Start hidden when a target is already on the first screen, to avoid a flash.

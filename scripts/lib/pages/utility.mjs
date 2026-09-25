@@ -26,6 +26,7 @@ function thanksNext(ctx) {
       <p class="ty-recap" data-request-recap hidden></p>
       <h2 class="ty-h">What happens next</h2>
       <ol class="next">${steps.map(([t, p], i) => `<li><span class="next-n" aria-hidden="true">${i + 1}</span><div><h3>${esc(t)}</h3><p>${esc(p)}</p></div></li>`).join('')}</ol>
+      <p class="ty-wait"><span class="ty-wait-k">While you wait</span><a class="tlink tlink-sm" href="${ctx.url('/guides/')}">Holiday lighting guides${icon('arrow')}</a><a class="tlink tlink-sm" href="${ctx.url('/our-work/')}">Our work${icon('arrow')}</a></p>
     </div>`;
 }
 

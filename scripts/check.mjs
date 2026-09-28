@@ -104,6 +104,9 @@ const INDEXABLE = process.env.INDEXABLE === 'true';
 const W3F_KEY = (process.env.WEB3FORMS_KEY || '').trim();
 const GTM_ID = (process.env.GTM_ID || '').trim();
 const APEX_TOKEN = (process.env.APEX_FORM_TOKEN || '').trim();
+const GOOGLE_TAG_IDS = (process.env.GOOGLE_TAG_IDS || '').split(',').map((s) => s.trim()).filter(Boolean);
+const ADS_LEAD_SEND_TO = (process.env.ADS_LEAD_SEND_TO || '').trim();
+const CALLRAIL_SRC = (process.env.CALLRAIL_SWAP_SRC || '').trim();
 const SITE = ORIGIN + BASE;
 const THANK_YOU_URL = SITE + '/thank-you/';
 
@@ -731,7 +734,16 @@ for (const { file, route } of pages) {
   // GTM and attribution modes
   const gtmRefs = /googletagmanager\.com/.test(html);
   if (GTM_ID) { if (!html.includes(GTM_ID) || !gtmRefs) fail('tags: GTM_ID set but the GTM snippet is missing', route); }
-  else if (gtmRefs) fail('tags: GTM_ID unset but the page references googletagmanager.com', route);
+  if (GOOGLE_TAG_IDS.length) {
+    if (!html.includes('googletagmanager.com/gtag/js?id=' + GOOGLE_TAG_IDS[0])) fail('tags: GOOGLE_TAG_IDS set but the gtag.js loader is missing', route);
+    for (const id of GOOGLE_TAG_IDS) if (!html.includes(`gtag('config','${id}')`)) fail(`tags: gtag config for ${id} is missing`, route);
+    const body = N.find(tagIs('body'));
+    if (ADS_LEAD_SEND_TO && body && body.attrs['data-ads-lead'] !== ADS_LEAD_SEND_TO) fail('tags: ADS_LEAD_SEND_TO set but body data-ads-lead does not match', route);
+  }
+  if (!GTM_ID && !GOOGLE_TAG_IDS.length && gtmRefs) fail('tags: no GTM_ID or GOOGLE_TAG_IDS but the page references googletagmanager.com', route);
+  const callrailScripts = q((n) => n.tag === 'script' && /callrail\.com/.test(n.attrs.src || ''));
+  if (CALLRAIL_SRC) { if (!callrailScripts.some((s) => s.attrs.src === CALLRAIL_SRC)) fail('tags: CALLRAIL_SWAP_SRC set but the swap script is missing', route); }
+  else if (callrailScripts.length) fail('tags: CALLRAIL_SWAP_SRC unset but the page loads a CallRail script', route);
   const apexScripts = q((n) => n.tag === 'script' && /apex-attribution\.js/.test(n.attrs.src || ''));
   if (APEX_TOKEN) {
     if (forms.length && !apexScripts.some((s) => s.attrs['data-token'] === APEX_TOKEN)) fail('tags: APEX_FORM_TOKEN set but apex-attribution.js with data-token is missing', route);
@@ -955,7 +967,7 @@ const line = '-'.repeat(72);
 console.log(line);
 console.log('Holiday Light Service static check');
 console.log(`dist: ${DIST}`);
-console.log(`base "${BASE}"  origin ${ORIGIN}  indexable ${INDEXABLE}  forms ${W3F_KEY ? 'direct (Web3Forms)' : 'preview'}  gtm ${GTM_ID || 'off'}  attribution ${APEX_TOKEN ? 'on' : 'off'}`);
+console.log(`base "${BASE}"  origin ${ORIGIN}  indexable ${INDEXABLE}  forms ${W3F_KEY ? 'direct (Web3Forms)' : 'preview'}  gtm ${GTM_ID || 'off'}  gtag ${GOOGLE_TAG_IDS.join('+') || 'off'}  callrail ${CALLRAIL_SRC ? 'on' : 'off'}  attribution ${APEX_TOKEN ? 'on' : 'off'}`);
 for (const n of notes) console.log('note: ' + n);
 console.log(`pages ${pages.length}: ` + Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(', '));
 console.log(`internal references ${refCount}, images ${imgCount}, media files verified ${mediaChecked}, sitemap URLs ${sitemapLocs.length}, allowed claim-pattern hits ${allowedClaims.length}`);

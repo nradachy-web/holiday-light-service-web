@@ -22,6 +22,8 @@
 
   function $$(sel, el) { return Array.prototype.slice.call((el || d).querySelectorAll(sel)); }
   function push(obj) { try { w.dataLayer.push(obj); } catch (e) { /* never break the page */ } }
+  // With the direct Google tag on the page, mirror an event to it (GA4 and Ads). Never throws.
+  function tag(name, params) { try { if (typeof w.gtag === 'function') { w.gtag('event', name, params || {}); return true; } } catch (e) { /* optional */ } return false; }
   function safe(name, fn) { try { fn(); } catch (e) { if (w.console) console.warn('[hls] ' + name, e); } }
   function scrollToEl(el, block) {
     el.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: block || 'start' });
@@ -31,7 +33,10 @@
   safe('tracking', function () {
     d.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[data-contact]');
-      if (a) push({ event: 'contact_click', channel: a.getAttribute('data-contact'), placement: a.getAttribute('data-placement') || '' });
+      if (a) {
+        push({ event: 'contact_click', channel: a.getAttribute('data-contact'), placement: a.getAttribute('data-placement') || '' });
+        if (a.getAttribute('data-contact') === 'phone') tag('phone_click', { placement: a.getAttribute('data-placement') || '' });
+      }
       var cta = e.target.closest && e.target.closest('a[data-cta="estimate"]');
       if (cta) push({ event: 'estimate_cta_click', placement: cta.getAttribute('data-placement') || '' });
     }, true);
@@ -552,7 +557,11 @@
           // cut off by the navigation; without it there is nothing to wait for.
           var gtm = !!(w.google_tag_manager && Object.keys(w.google_tag_manager).some(function (k) { return /^GTM-/.test(k); }));
           push({ event: 'generate_lead', property_type: prop, city: citySlug, city_name: cityName, placement: placement, eventCallback: leave, eventTimeout: 1500 });
-          setTimeout(leave, gtm ? 1700 : 150);
+          // Direct Google tag: GA4 lead event plus the Ads conversion, and the redirect waits for the hit.
+          var adsLead = d.body.getAttribute('data-ads-lead');
+          var tagged = tag('generate_lead', { property_type: prop, city: citySlug });
+          if (tagged && adsLead) tag('conversion', { send_to: adsLead, event_callback: leave, event_timeout: 1500 });
+          setTimeout(leave, gtm || (tagged && adsLead) ? 1700 : 150);
         })
         .catch(function () {
           busy(false);

@@ -24,7 +24,8 @@ export default function privacyPages(ctx) {
 
 // Each section: [heading, [html blocks]]. Text is escaped where it is built.
 function sections(ctx) {
-  const { formKey, gtmId, apexToken } = ctx.cfg;
+  const { formKey, gtmId, apexToken, googleTagIds, callrailSrc } = ctx.cfg;
+  const tagsOn = Boolean(gtmId || googleTagIds.length);
   const tel = `<a href="${B.tel}" data-contact="phone" data-placement="privacy_text">${B.phone}</a>`;
   const out = [];
 
@@ -53,6 +54,15 @@ function sections(ctx) {
         `<p>You can block or clear cookies in your browser settings at any time.</p>`,
       ],
     ]);
+  } else if (googleTagIds.length) {
+    out.push([
+      'Analytics and advertising tags',
+      [
+        `<p>This site loads the Google tag for Google Analytics and Google Ads. It measures visits and counts the calls and estimate requests that come from ads, and it can set cookies in your browser.</p>`,
+        `<p>The site sends the tag simple events, such as a tap on a phone link or a sent request, along with the property type and city you chose. It never sends your name, phone number, email or address.</p>`,
+        `<p>You can block or clear cookies in your browser settings at any time.</p>`,
+      ],
+    ]);
   } else {
     out.push([
       'Analytics and advertising tags',
@@ -70,13 +80,22 @@ function sections(ctx) {
       ],
     ]);
   } else {
-    out.push(['Cookies', [`<p>The site itself does not set cookies.${gtmId ? ' Tags loaded through the tag manager can, as described above.' : ''}</p>`]]);
+    out.push(['Cookies', [`<p>The site itself does not set cookies.${tagsOn ? ' The tags described above can.' : ''}</p>`]]);
   }
 
   out.push([
     'Phone links',
-    [`<p>Phone numbers on this site are tel: links. Tapping one opens your phone or calling app with ${tel}, and the call goes straight to ${esc(B.name)}. The website does not record calls.${gtmId || apexToken ? ' The tap itself is counted as described above.' : ''}</p>`],
+    [`<p>Phone numbers on this site are tel: links. Tapping one opens your phone or calling app with ${callrailSrc ? 'the number shown' : tel}, and the call goes straight to ${esc(B.name)}. The website does not record calls.${tagsOn || apexToken ? ' The tap itself is counted as described above.' : ''}</p>`],
   ]);
+  if (callrailSrc) {
+    out.push([
+      'Call tracking',
+      [
+        `<p>This site uses CallRail, a call tracking service. The phone number you see may be a CallRail tracking number that rings straight through to ${esc(B.name)}. It helps ${esc(B.name)} see which ads and pages lead to calls.</p>`,
+        `<p>For each call, CallRail logs the number you called from, the time and length of the call, and the page or ad that led to it. Calls are not recorded. CallRail handles this information under its own privacy policy.</p>`,
+      ],
+    ]);
+  }
 
   out.push([
     'Hosting, fonts and media',

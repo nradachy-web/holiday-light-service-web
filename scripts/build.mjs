@@ -3,7 +3,8 @@
 // shared shell, copies public/ into dist/ and writes sitemap.xml, robots.txt and route-manifest.json.
 //
 // Env: BASE_PATH (default /holiday-light-service-web), SITE_ORIGIN (default https://nradachy-web.github.io),
-//      INDEXABLE=true to drop noindex, WEB3FORMS_KEY, GTM_ID, APEX_FORM_TOKEN (all optional).
+//      INDEXABLE=true to drop noindex, WEB3FORMS_KEY, GTM_ID, APEX_FORM_TOKEN, GOOGLE_TAG_IDS,
+//      ADS_LEAD_SEND_TO, CALLRAIL_SWAP_SRC (all optional).
 //
 // Pages come from every module in scripts/lib/pages/. Each default export takes the build context
 // and returns an array of page objects: { path, title, description, body(ctx, page), type, crumbs,

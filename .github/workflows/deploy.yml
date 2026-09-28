@@ -41,6 +41,9 @@ jobs:
           V_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_KEY }}
           V_GTM_ID: ${{ vars.GTM_ID }}
           V_APEX_FORM_TOKEN: ${{ vars.APEX_FORM_TOKEN }}
+          V_GOOGLE_TAG_IDS: ${{ vars.GOOGLE_TAG_IDS }}
+          V_ADS_LEAD_SEND_TO: ${{ vars.ADS_LEAD_SEND_TO }}
+          V_CALLRAIL_SWAP_SRC: ${{ vars.CALLRAIL_SWAP_SRC }}
         run: |
           origin="${V_SITE_ORIGIN:-https://nradachy-web.github.io}"
           origin="${origin%/}"
@@ -60,6 +63,9 @@ jobs:
             echo "WEB3FORMS_KEY=$V_WEB3FORMS_KEY"
             echo "GTM_ID=$V_GTM_ID"
             echo "APEX_FORM_TOKEN=$V_APEX_FORM_TOKEN"
+            echo "GOOGLE_TAG_IDS=$V_GOOGLE_TAG_IDS"
+            echo "ADS_LEAD_SEND_TO=$V_ADS_LEAD_SEND_TO"
+            echo "CALLRAIL_SWAP_SRC=$V_CALLRAIL_SWAP_SRC"
           } >> "$GITHUB_ENV"
           echo "Building for ${origin}${base}/ (indexable: ${indexable}, form delivery: $([ -n "$V_WEB3FORMS_KEY" ] && echo direct || echo preview), GTM: ${V_GTM_ID:-off}, attribution: $([ -n "$V_APEX_FORM_TOKEN" ] && echo on || echo off))"
       - run: npm ci

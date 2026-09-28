@@ -325,6 +325,10 @@ async function main() {
         external.gtm++;
         return route.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
       }
+      if (/(?:^|\.)callrail\.com$/.test(u.hostname)) {
+        external.gtm++;
+        return route.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
+      }
       if (u.hostname === 'app.modernapexstrategies.com') {
         external.attribution.push({ url: req.url(), body: req.postData() || '' });
         return route.fulfill({ status: 204, body: '' });

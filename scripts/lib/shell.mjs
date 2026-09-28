@@ -57,6 +57,11 @@ export function renderPage(ctx, page) {
   const gtmBody = cfg.gtmId
     ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${cfg.gtmId}" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>`
     : '';
+  const gtag = cfg.googleTagIds.length
+    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(cfg.googleTagIds[0])}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());${cfg.googleTagIds.map((id) => `gtag('config','${id}');`).join('')}</script>`
+    : '';
+  // CallRail swaps the business number for a tracking number that rings straight through to the office.
+  const callrail = cfg.callrailSrc ? `<script src="${esc(cfg.callrailSrc)}" defer></script>` : '';
   const apex = cfg.apexToken ? `<script src="${ctx.url('/assets/js/apex-attribution.js')}" data-token="${esc(cfg.apexToken)}" defer></script>` : '';
 
   const bodyAttrs = [
@@ -66,6 +71,7 @@ export function renderPage(ctx, page) {
     page.service ? `data-service="${esc(page.service)}"` : '',
     page.city ? `data-city="${esc(page.city)}"` : '',
     `data-thanks="${esc(ctx.url('/thank-you/'))}"`,
+    cfg.adsLeadSendTo ? `data-ads-lead="${esc(cfg.adsLeadSendTo)}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -99,6 +105,7 @@ export function renderPage(ctx, page) {
 <link rel="stylesheet" href="${ctx.url('/assets/css/site.css')}?v=${ctx.version}">
 <script>${HEAD_SCRIPT}</script>
 ${gtmHead}
+${gtag}
 <script type="application/ld+json">${json({ '@context': 'https://schema.org', '@graph': graph })}</script>
 <script src="${ctx.url('/assets/js/site.js')}?v=${ctx.version}" defer></script>
 ${apex}
@@ -112,6 +119,7 @@ ${body}
 </main>
 ${footer(ctx, page)}
 ${mobileBar(ctx, page)}
+${callrail}
 </body>
 </html>
 `;

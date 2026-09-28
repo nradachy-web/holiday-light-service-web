@@ -34,6 +34,9 @@ Every script reads the same environment variables. Pass the same values to `buil
 | `INDEXABLE` | unset (false) | `true` removes `noindex`. Otherwise every page carries `<meta name="robots" content="noindex,follow">`. `/thank-you/` is always noindex |
 | `WEB3FORMS_KEY` | unset | When set, the estimate form posts to Web3Forms (fetch with JavaScript, plain POST with a redirect without it). When unset, submitting shows a preview notice and a call button and sends nothing |
 | `GTM_ID` | unset | Loads Google Tag Manager only when set |
+| `GOOGLE_TAG_IDS` | unset | Comma list of Google tag ids (`AW-...`, `G-...`) loaded directly with gtag.js |
+| `ADS_LEAD_SEND_TO` | unset | Google Ads conversion (`AW-id/label`) fired after Web3Forms confirms a request |
+| `CALLRAIL_SWAP_SRC` | unset | CallRail swap.js URL; swaps the business number for a tracking number |
 | `APEX_FORM_TOKEN` | unset | Includes the vendored `assets/js/apex-attribution.js` with this token and attaches each confirmed lead |
 
 `check` and `test` infer `BASE_PATH` and `SITE_ORIGIN` from the canonical tag of `dist/index.html` when those two are not set, and print that they did.
@@ -84,7 +87,7 @@ SITE_ORIGIN=https://holidaylightservicemi.com BASE_PATH= INDEXABLE=true npm run 
 
 `.github/workflows/deploy.yml` runs on every push to `main` (and by hand from the Actions tab): Node 22, `npm ci`, `npm run build`, `npm run check`, upload `dist/`, deploy to GitHub Pages. A failed check stops the deploy.
 
-One-time setup: Settings, Pages, Source: **GitHub Actions**. Build settings come from repository variables (Settings, Secrets and variables, Actions, Variables): `SITE_ORIGIN`, `BASE_PATH`, `INDEXABLE`, `WEB3FORMS_KEY`, `GTM_ID`, `APEX_FORM_TOKEN`. Anything unset falls back to the noindex preview at https://nradachy-web.github.io/holiday-light-service-web/. GitHub does not allow an empty variable, so the workflow builds at the root automatically when `SITE_ORIGIN` is a custom domain; `BASE_PATH` set to `/` or `none` also means the root.
+One-time setup: Settings, Pages, Source: **GitHub Actions**. Build settings come from repository variables (Settings, Secrets and variables, Actions, Variables): `SITE_ORIGIN`, `BASE_PATH`, `INDEXABLE`, `WEB3FORMS_KEY`, `GTM_ID`, `APEX_FORM_TOKEN`, `GOOGLE_TAG_IDS`, `ADS_LEAD_SEND_TO`, `CALLRAIL_SWAP_SRC`. Anything unset falls back to the noindex preview at https://nradachy-web.github.io/holiday-light-service-web/. GitHub does not allow an empty variable, so the workflow builds at the root automatically when `SITE_ORIGIN` is a custom domain; `BASE_PATH` set to `/` or `none` also means the root.
 
 ## Launch checklist
 

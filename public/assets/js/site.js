@@ -557,11 +557,17 @@
           // cut off by the navigation; without it there is nothing to wait for.
           var gtm = !!(w.google_tag_manager && Object.keys(w.google_tag_manager).some(function (k) { return /^GTM-/.test(k); }));
           push({ event: 'generate_lead', property_type: prop, city: citySlug, city_name: cityName, placement: placement, eventCallback: leave, eventTimeout: 1500 });
-          // Direct Google tag: GA4 lead event plus the Ads conversion, and the redirect waits for the hit.
+          // Direct Google tag: GA4 lead event plus the Ads conversion. The redirect waits until both
+          // hits are sent (each callback fires once, capped by event_timeout), so neither is cut off.
           var adsLead = d.body.getAttribute('data-ads-lead');
-          var tagged = tag('generate_lead', { property_type: prop, city: citySlug });
-          if (tagged && adsLead) tag('conversion', { send_to: adsLead, event_callback: leave, event_timeout: 1500 });
-          setTimeout(leave, gtm || (tagged && adsLead) ? 1700 : 150);
+          var waiting = 0;
+          var settle = function () { waiting -= 1; if (waiting <= 0) leave(); };
+          if (typeof w.gtag === 'function') {
+            waiting += 1;
+            if (!tag('generate_lead', { property_type: prop, city: citySlug, event_callback: settle, event_timeout: 1500 })) waiting -= 1;
+            if (adsLead) { waiting += 1; if (!tag('conversion', { send_to: adsLead, event_callback: settle, event_timeout: 1500 })) waiting -= 1; }
+          }
+          setTimeout(leave, gtm || waiting > 0 ? 1700 : 150);
         })
         .catch(function () {
           busy(false);

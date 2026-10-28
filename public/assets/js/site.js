@@ -321,9 +321,12 @@
   function checkedValues(form, name) {
     return $$('input[name="' + name + '"]:checked', form).map(function (i) { return i.value; });
   }
+  // Every property type but Home is commercial: show the company and property name pair (required then).
+  function isCommercial(prop) { return !!prop && prop !== 'Home'; }
   function updateContext(form) {
     var ctx = form.querySelector('[data-context]');
     var prop = checkedValue(form, 'property_type');
+    if (isCommercial(prop)) form.setAttribute('data-commercial', ''); else form.removeAttribute('data-commercial');
     // "Planning for" pills show which property type the page's form is set to.
     if (form.closest('#estimate')) {
       $$('[data-plan-pill]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-preset-property') === prop)); });
@@ -459,18 +462,33 @@
       }
     }
     function validate() {
-      var name = form.querySelector('[name="name"]');
-      var phone = form.querySelector('[name="phone"]');
-      var email = form.querySelector('[name="email"]');
+      var get = function (n) { return form.querySelector('[name="' + n + '"]'); };
+      var phone = get('phone');
+      var email = get('email');
+      var commercial = isCommercial(checkedValue(form, 'property_type'));
       var bad = [];
-      [name, phone, email].forEach(function (f) { if (f) fieldError(f, ''); });
-      if (name && !name.value.trim()) bad.push([name, 'your name', 'Please add your name.']);
+      ['company_name', 'property_name', 'address', 'first_name', 'last_name', 'phone', 'email'].forEach(function (n) { var f = get(n); if (f) fieldError(f, ''); });
+      var need = function (n, what, msg) { var f = get(n); if (f && !f.value.trim()) bad.push([f, what, msg]); };
+      if (commercial) {
+        need('company_name', 'the company or organization', 'Please add the company or organization name.');
+        need('property_name', 'the property name', 'Please add the property name.');
+      }
+      need('address', 'the street address', 'Please add the street address.');
+      need('first_name', 'your first name', 'Please add your first name.');
+      need('last_name', 'your last name', 'Please add your last name.');
       var digits = phone ? phone.value.replace(/\D/g, '').length : 10;
       if (phone && !digits) bad.push([phone, 'a phone number', 'Please add a phone number.']);
       else if (phone && digits < 10) bad.push([phone, 'a phone number with area code', 'Please add a phone number with area code.']);
-      if (email && email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) bad.push([email, 'a valid email, or leave it blank', 'Please check the email, or leave it blank.']);
+      var mail = email ? email.value.trim() : 'x@x.x';
+      if (!mail) bad.push([email, 'your email', 'Please add your email.']);
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) bad.push([email, 'a valid email', 'Please check the email address.']);
+      // Form order, so the first problem is the first one the visitor meets (fields sit on different steps).
+      bad.sort(function (a, b) { return a[0].compareDocumentPosition(b[0]) & 4 ? -1 : 1; });
       bad.forEach(function (b) { fieldError(b[0], b[2]); });
       return bad;
+    }
+    function listOf(items) {
+      return items.length < 3 ? items.join(' and ') : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
     }
     function setStatus(html, isError) {
       if (!status) return;
@@ -494,7 +512,7 @@
         var step = fieldStep(bad[0][0]);
         if (step !== cur) go(step, false);
         bad[0][0].focus();
-        setStatus('Please add ' + bad.map(function (b) { return b[1]; }).join(' and ') + '.', true);
+        setStatus('Please add ' + listOf(bad.map(function (b) { return b[1]; })) + '.', true);
         return;
       }
       var lights = checkedValues(form, 'what_to_light');
@@ -518,22 +536,27 @@
       };
       busy(true);
       setStatus('Sending your request.', false);
+      // Web3Forms emails every field in this order, so only what the office uses goes in. The page,
+      // placement and city slug stay in the analytics events below.
       var payload = {
         access_key: val('access_key'),
         subject: 'Estimate request: ' + (prop || 'Property') + (cityName ? ' in ' + cityName : ''),
         from_name: 'Holiday Light Service website',
-        page: w.location.pathname,
-        placement: placement,
         what_to_light: lights.join(', '),
-        property_type: prop,
-        city: cityName,
-        city_slug: citySlug,
-        address: val('address'),
-        name: val('name'),
-        phone: val('phone'),
-        email: val('email'),
-        botcheck: false
+        property_type: prop
       };
+      if (isCommercial(prop)) {
+        payload.company_name = val('company_name');
+        payload.property_name = val('property_name');
+      }
+      payload.city = cityName;
+      payload.address = val('address');
+      payload.first_name = val('first_name');
+      payload.last_name = val('last_name');
+      payload.phone = val('phone');
+      payload.email = val('email');
+      payload.botcheck = false;
+      var fullName = payload.first_name + ' ' + payload.last_name;
       fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -544,7 +567,7 @@
           if (!r.ok || !r.j || r.j.success !== true) throw new Error('not accepted');
           try {
             if (w.apexAttribution && typeof w.apexAttribution.attach === 'function') {
-              w.apexAttribution.attach({ name: payload.name, email: payload.email, phone: payload.phone, message: [payload.what_to_light, prop, cityName, payload.address].filter(Boolean).join(' | ') });
+              w.apexAttribution.attach({ name: fullName, email: payload.email, phone: payload.phone, message: [payload.what_to_light, prop, payload.company_name, payload.property_name, cityName, payload.address].filter(Boolean).join(' | ') });
             }
           } catch (err) { /* attribution is additive only */ }
           // The thank-you page repeats the choices back (never name, phone or email).

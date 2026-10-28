@@ -432,6 +432,8 @@ a,button,label,summary{-webkit-tap-highlight-color:transparent}
 .q-legend{padding:0;margin-bottom:8px;font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:-.015em;color:var(--ink)}
 .q-hint{font-size:14.5px;margin:-4px 0 10px}
 .js .quote .q-step:not([data-step-active]){display:none}
+/* Company and property name only for a commercial property type (site.js sets form[data-commercial]). */
+.js .quote:not([data-commercial]) .q-biz{display:none}
 .q-sub{border:0;padding:0;margin:14px 0 0;min-width:0}
 .q-sublabel{padding:0;margin-bottom:8px;font-size:14.5px;font-weight:600;color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}

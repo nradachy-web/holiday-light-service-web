@@ -1048,13 +1048,21 @@ async function main() {
       if (!v.focusInForm || !v.invalid) warn('forms', `${where}: empty submit should set aria-invalid and focus the first missing field (focus in form ${v.focusInForm}, aria-invalid ${v.invalid})`);
       if (flowEvents.some((e) => e.event === 'generate_lead')) fail('dataLayer', `${where}: generate_lead fired on a failed validation`);
 
-      // Fill the contact step
+      // Fill every required field. They sit on more than one step (the address on the property step, the
+      // company and property name only for a commercial type), so walk all steps, then return to the last.
+      const emptyFlags = await page.evaluate(() => [...document.querySelectorAll('[data-qa-form] [aria-invalid="true"]')].map((e) => e.name));
+      out.emptySubmitFlags = emptyFlags;
+      for (const n of ['address', 'first_name', 'last_name', 'phone', 'email']) if (!emptyFlags.includes(n)) fail('forms', `${where}: an empty submit did not flag ${n}`);
+      const commercialForm = await page.evaluate(() => document.querySelector('[data-qa-form]').hasAttribute('data-commercial'));
+      out.commercial = commercialForm;
+      if (commercialForm && !(emptyFlags.includes('company_name') && emptyFlags.includes('property_name'))) fail('forms', `${where}: a commercial property type did not require the company and property name`);
+      if (!commercialForm && emptyFlags.some((n) => /company_name|property_name/.test(n))) fail('forms', `${where}: the company and property name were required for a home`);
       await page.evaluate(() => {
         const f = document.querySelector('[data-qa-form]');
-        const s = f.querySelector('[data-step-active]') || f;
         const set = (el, val) => { el.focus(); el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
-        for (const el of s.querySelectorAll('input, textarea, select')) {
-          if (el.name === 'botcheck' || el.type === 'hidden' || !__qa.shown(el)) continue;
+        for (const el of f.querySelectorAll('[data-step] input, [data-step] textarea, [data-step] select')) {
+          if (el.name === 'botcheck' || el.type === 'hidden') continue;
+          if (el.closest('[data-biz]') && !f.hasAttribute('data-commercial')) continue;
           if (el.type === 'checkbox' || el.type === 'radio') { if (el.required && !el.checked) el.click(); continue; }
           if (el.tagName === 'SELECT') { if (!el.value) { const o = [...el.options].find((x) => x.value); if (o) set(el, o.value); } continue; }
           if (el.value) continue;
@@ -1067,6 +1075,7 @@ async function main() {
           else set(el, 'Browser QA');
         }
       });
+      for (let i = 0; i < 4 && !(await submitVisible()); i++) { await markClick('next'); await settle(page, 300); }
 
       if (mode === 'preview') {
         const w3f0 = external.web3forms.length;
@@ -1128,6 +1137,11 @@ async function main() {
           if (!jsonPost && (!body.redirect || !/\/thank-you\/$/.test(body.redirect))) warn('forms', `${where}: form-encoded payload has no redirect field ending in /thank-you/`);
           if (!body.property_type || !body.city) fail('forms', `${where}: payload is missing property_type or city`);
           if (body.botcheck) fail('forms', `${where}: honeypot was filled`);
+          // The office reads every field Web3Forms emails: no technical fields, first and last name apart.
+          for (const k of ['page', 'placement', 'city_slug', 'name']) if (k in body) fail('forms', `${where}: payload still carries "${k}"`);
+          for (const k of ['address', 'first_name', 'last_name', 'phone', 'email']) if (!body[k]) fail('forms', `${where}: payload is missing ${k}`);
+          if (body.property_type === 'Home' && ('company_name' in body || 'property_name' in body)) fail('forms', `${where}: a home request carries company or property name fields`);
+          if (body.property_type !== 'Home' && (!body.company_name || !body.property_name)) fail('forms', `${where}: a ${body.property_type} request is missing the company or property name`);
         }
         const lead = flowEvents.filter((e) => e.event === 'generate_lead');
         if (lead.length !== 1) fail('dataLayer', `${where}: expected one generate_lead after success, got ${lead.length}`);
@@ -1157,6 +1171,7 @@ async function main() {
   const firstLocal = pages.find((p) => p.kind === 'local');
   if (firstLocal) await formFlow({ route: firstLocal.route, vp: VIEWPORTS[1], label: 'landing, phone', directFailFirst: true });
   if (home) await formFlow({ route: home.route, vp: VIEWPORTS[0], label: 'home, desktop', directFailFirst: false });
+  if (commercialLocal) await formFlow({ route: commercialLocal.route, vp: VIEWPORTS[1], label: 'commercial landing, phone', directFailFirst: false });
 
   // No-JavaScript POST in direct mode: the plain form must carry access_key and redirect.
   if (directMode && firstLocal) {

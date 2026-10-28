@@ -42,24 +42,33 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
   const citySelect = `<div class="field"><label for="${uid}-city">City</label><select id="${uid}-city" name="city" autocomplete="address-level2"><option value="">Choose your community</option>${counties
     .map((g) => `<optgroup label="${esc(g.county)}">${g.cities.map((c) => `<option value="${c.slug}"${c.slug === city ? ' selected' : ''}>${esc(c.display)}</option>`).join('')}</optgroup>`)
     .join('')}<option value="other">Somewhere else in Michigan</option></select></div>`;
-  const address = `<div class="field"><label for="${uid}-address">Street address <span class="opt">(optional)</span></label><input id="${uid}-address" name="address" type="text" autocomplete="street-address"></div>`;
   // Each field has an empty error slot; site.js fills it and links it with aria-describedby only while invalid.
   const err = (f) => `<p class="field-err" id="${uid}-${f}-err" data-err hidden></p>`;
-  const contact = `<div class="field"><label for="${uid}-name">Name</label><input id="${uid}-name" name="name" type="text" autocomplete="name" required>${err('name')}</div>
+  const address = `<div class="field"><label for="${uid}-address">Street address</label><input id="${uid}-address" name="address" type="text" autocomplete="street-address" required>${err('address')}</div>`;
+  // Every type but Home is a commercial property: the office needs the company and the property name.
+  // site.js shows the pair (form[data-commercial]) and requires it only while one of those types is chosen.
+  const business = `<div class="field-row q-biz" data-biz>
+        <div class="field"><label for="${uid}-company">Company or organization</label><input id="${uid}-company" name="company_name" type="text" autocomplete="organization">${err('company')}</div>
+        <div class="field"><label for="${uid}-propname">Property name</label><input id="${uid}-propname" name="property_name" type="text">${err('propname')}</div>
+      </div>`;
+  const contact = `<div class="field-row">
+        <div class="field"><label for="${uid}-first">First name</label><input id="${uid}-first" name="first_name" type="text" autocomplete="given-name" required>${err('first')}</div>
+        <div class="field"><label for="${uid}-last">Last name</label><input id="${uid}-last" name="last_name" type="text" autocomplete="family-name" required>${err('last')}</div>
+      </div>
       <div class="field-row">
         <div class="field"><label for="${uid}-phone">Phone</label><input id="${uid}-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>${err('phone')}</div>
-        <div class="field"><label for="${uid}-email">Email <span class="opt">(optional)</span></label><input id="${uid}-email" name="email" type="email" autocomplete="email">${err('email')}</div>
+        <div class="field"><label for="${uid}-email">Email</label><input id="${uid}-email" name="email" type="email" autocomplete="email" required>${err('email')}</div>
       </div>`;
 
   const stepDefs =
     total === 2
       ? [
-          { dot: 'What', legend: 'What should we light?', next: 'Next: your details', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}${propertyGroup}` },
+          { dot: 'What', legend: 'What should we light?', next: 'Next: your details', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}${propertyGroup}${business}` },
           { dot: 'You', legend: 'How do we reach you?', body: `${contact}${citySelect}${address}` },
         ]
       : [
           { dot: 'What', legend: 'What should we light?', next: 'Next: the property', body: `<p class="q-hint">Choose any that apply.</p>${lightChips}` },
-          { dot: 'Where', legend: 'Where is the property?', next: 'Next: your details', body: `${propertyGroup}${citySelect}${address}` },
+          { dot: 'Where', legend: 'Where is the property?', next: 'Next: your details', body: `${propertyGroup}${business}${citySelect}${address}` },
           { dot: 'You', legend: 'How do we reach you?', body: contact },
         ];
 
@@ -76,14 +85,14 @@ export function quoteForm(ctx, page, { placement = 'hero', anchor = 'estimate', 
   const ctxText = contextText(property, cityObj);
   const thanks = ctx.abs('/thank-you/');
   const hidden = live
-    ? `<input type="hidden" name="access_key" value="${esc(ctx.cfg.formKey)}"><input type="hidden" name="subject" value="New estimate request from the Holiday Light Service website"><input type="hidden" name="from_name" value="Holiday Light Service website"><input type="hidden" name="redirect" value="${esc(thanks)}"><input type="hidden" name="page" value="${esc(page.path)}">`
+    ? `<input type="hidden" name="access_key" value="${esc(ctx.cfg.formKey)}"><input type="hidden" name="subject" value="New estimate request from the Holiday Light Service website"><input type="hidden" name="from_name" value="Holiday Light Service website"><input type="hidden" name="redirect" value="${esc(thanks)}">`
     : '';
   const formAttrs = live ? ` action="https://api.web3forms.com/submit" method="post"` : ` method="post"`;
   const nextSteps = ctx.content.copy.contact.next_steps;
   const note = `What happens next: ${nextSteps[0][1]} ${nextSteps[2][1]}`;
 
   return `<div class="quote-wrap" id="${anchor}">
-<form class="quote" data-quote data-placement="${esc(placement)}" data-steps="${total}" data-mode="${live ? 'live' : 'preview'}"${formAttrs} aria-labelledby="${uid}-title"${cityObj ? ` data-city="${cityObj.slug}"` : ''}>
+<form class="quote" data-quote data-placement="${esc(placement)}" data-steps="${total}" data-mode="${live ? 'live' : 'preview'}"${property && property !== 'Home' ? ' data-commercial' : ''}${formAttrs} aria-labelledby="${uid}-title"${cityObj ? ` data-city="${cityObj.slug}"` : ''}>
   <div class="q-head">
     <h2 class="q-title" id="${uid}-title" tabindex="-1">${esc(heading)}</h2>
     <p class="q-context" data-context${cityObj ? ' data-has-city' : ''}${ctxText ? '' : ' hidden'}>${icon('pin', 'i-pin')}${icon('home', 'i-prop')}<span data-context-text>${esc(ctxText)}</span></p>

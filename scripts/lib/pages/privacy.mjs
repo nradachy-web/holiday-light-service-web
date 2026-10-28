@@ -32,11 +32,11 @@ function sections(ctx) {
   const form = [
     `<p>When you send an estimate request, the form sends what you enter and choose:</p>`,
     `<ul class="pv-list">
-      <li>Your name and phone number</li>
-      <li>Your email address, if you add one</li>
-      <li>Your city and, if you add it, your street address</li>
+      <li>Your first and last name, phone number and email address</li>
+      <li>Your city and street address</li>
       <li>The property type and what you would like lit</li>
-      <li>The page you sent it from</li>
+      <li>For a business, HOA or downtown property, the company or organization and the property name</li>${apexToken ? `
+      <li>The page you sent it from</li>` : ''}
     </ul>`,
     // True whether the form key delivers to the agency inbox (which passes requests on) or to the
     // company office directly: name both parties that can receive a request.
